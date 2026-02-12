@@ -36,13 +36,13 @@ export default function Navbar() {
 
           <div className="hidden md:flex items-center gap-3">
             <Link
-              href="/dashboard/employer/create-job"
+              href="/comenzar"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Iniciar sesion
             </Link>
             <Link
-              href="/dashboard/employer/create-job"
+              href="/comenzar"
               className="bg-primary text-primary-foreground px-5 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
             >
               Comenzar gratis
@@ -61,7 +61,7 @@ export default function Navbar() {
             <a href="#mercado" className="block text-sm text-muted-foreground hover:text-foreground px-2 py-1">Mercado</a>
             <a href="#modelo" className="block text-sm text-muted-foreground hover:text-foreground px-2 py-1">Modelo</a>
             <Link
-              href="/dashboard/employer/create-job"
+              href="/comenzar"
               className="block bg-primary text-primary-foreground px-5 py-2 rounded-lg text-sm font-medium text-center hover:opacity-90 transition-opacity"
             >
               Comenzar gratis

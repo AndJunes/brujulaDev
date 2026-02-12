@@ -25,7 +25,7 @@ export default function CTASection() {
         </p>
 
         <Link
-          href="/dashboard/employer/create-job"
+          href="/comenzar"
           className="inline-flex items-center justify-center bg-primary-foreground px-10 py-4 rounded-lg text-lg font-bold hover:opacity-90 transition-opacity"
           style={{ color: "var(--prussian)" }}
         >

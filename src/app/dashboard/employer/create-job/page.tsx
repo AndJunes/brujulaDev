@@ -165,7 +165,7 @@ export default function CreateJobPage() {
           {/* Botones */}
           <div className="flex justify-between pt-4">
             <button
-              onClick={() => router.back()}
+              onClick={() => router.push("/dashboard/employer")}
               className="px-6 py-2 border rounded-lg hover:bg-gray-50"
             >
               Cancelar

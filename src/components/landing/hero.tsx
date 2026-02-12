@@ -23,7 +23,7 @@ export default function HeroSection() {
 
             <div className="flex flex-wrap gap-4">
               <Link
-                href="/dashboard/employer/create-job"
+                href="/comenzar"
                 className="bg-primary text-primary-foreground px-8 py-3.5 rounded-lg text-base font-semibold hover:opacity-90 transition-opacity"
               >
                 Comenzar gratis
