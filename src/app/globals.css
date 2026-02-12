@@ -1,20 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #faf8f5;
-  --foreground: #1a1a1a;
-  --primary: #0f5132;
-  --primary-foreground: #ffffff;
-  --secondary: #f0ebe4;
-  --secondary-foreground: #1a1a1a;
-  --muted: #e8e2d9;
-  --muted-foreground: #6b6560;
-  --accent: #d4a853;
-  --accent-foreground: #1a1a1a;
-  --card: #ffffff;
-  --card-foreground: #1a1a1a;
-  --border: #e0dbd4;
+  --background: hsl(110, 23%, 94%);
+  --foreground: hsl(215, 75%, 16%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(215, 75%, 16%);
+  --primary: hsl(213, 73%, 26%);
+  --primary-foreground: hsl(110, 23%, 94%);
+  --secondary: hsl(215, 72%, 22%);
+  --secondary-foreground: hsl(110, 23%, 94%);
+  --muted: hsl(210, 25%, 92%);
+  --muted-foreground: hsl(213, 20%, 45%);
+  --accent: hsl(213, 33%, 66%);
+  --accent-foreground: hsl(215, 75%, 16%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --border: hsl(213, 25%, 85%);
+  --input: hsl(213, 25%, 85%);
+  --ring: hsl(213, 73%, 26%);
   --radius: 0.75rem;
+  --mint: hsl(110, 23%, 94%);
+  --powder: hsl(213, 33%, 66%);
+  --oxford: hsl(215, 72%, 22%);
+  --prussian: hsl(215, 75%, 16%);
+  --yale: hsl(213, 73%, 26%);
 }
 
 @theme inline {
@@ -31,8 +41,16 @@
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-mint: var(--mint);
+  --color-powder: var(--powder);
+  --color-oxford: var(--oxford);
+  --color-prussian: var(--prussian);
+  --color-yale: var(--yale);
   --radius: var(--radius);
-  --font-sans: 'Geist', 'Geist Fallback', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Space Grotesk', system-ui, sans-serif;
   --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
 }
 
@@ -40,4 +58,8 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
 }

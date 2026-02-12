@@ -1,30 +1,36 @@
 import Link from "next/link";
+import BrujulaLogo from "./brujula-logo";
 
-export function CTA() {
+export default function CTASection() {
   return (
-    <section className="px-6 py-24">
-      <div className="mx-auto max-w-4xl rounded-2xl bg-primary px-8 py-16 text-center sm:px-16">
-        <h2 className="text-balance text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
-          Empieza a trabajar con confianza
-        </h2>
-        <p className="mx-auto mt-4 max-w-xl text-pretty text-primary-foreground/80">
-          Conecta tu wallet Freighter y publica tu primer trabajo o aplica a
-          uno. El futuro del freelancing en LATAM esta aqui.
-        </p>
-        <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <Link
-            href="/dashboard/employer/create-job"
-            className="inline-flex items-center justify-center rounded-lg bg-card px-8 py-3.5 text-base font-semibold text-foreground transition-colors hover:bg-secondary"
-          >
-            Conectar Wallet
-          </Link>
-          <a
-            href="#como-funciona"
-            className="inline-flex items-center justify-center rounded-lg border border-primary-foreground/30 px-8 py-3.5 text-base font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/10"
-          >
-            Ver como funciona
-          </a>
+    <section className="relative py-24 overflow-hidden" style={{ background: "var(--prussian)" }}>
+      {/* Background image overlay */}
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-20"
+        style={{ backgroundImage: "url(/images/hero-bg.jpg)" }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[var(--prussian)]" />
+
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="flex justify-center mb-8">
+          <BrujulaLogo size={64} />
         </div>
+
+        <h2 className="font-[family-name:var(--font-heading)] text-4xl sm:text-5xl font-bold mb-6 text-balance" style={{ color: "var(--mint)" }}>
+          Todavia aceptas trabajos sin garantia?
+        </h2>
+
+        <p className="text-lg max-w-2xl mx-auto mb-10 leading-relaxed text-pretty" style={{ color: "var(--powder)" }}>
+          Empeza a cobrar seguro. Sin comisiones altas, sin esperar 30 dias, sin depender de la buena voluntad del cliente.
+        </p>
+
+        <Link
+          href="/dashboard/employer/create-job"
+          className="inline-flex items-center justify-center bg-primary-foreground px-10 py-4 rounded-lg text-lg font-bold hover:opacity-90 transition-opacity"
+          style={{ color: "var(--prussian)" }}
+        >
+          Comenzar gratis
+        </Link>
       </div>
     </section>
   );
