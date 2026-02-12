@@ -59,12 +59,16 @@ export function useWallet() {
     }
   };
 
-  const sign = async (xdr: string) => {
+  const sign = async (xdr: string, opts?: { networkPassphrase?: string }) => {
     try {
-      const result = await signTransaction(xdr);
+      const networkPassphrase = opts?.networkPassphrase || "Test SDF Network ; September 2015";
+      console.log("[v0] Signing XDR with networkPassphrase:", networkPassphrase);
+      const result = await signTransaction(xdr, {
+        networkPassphrase,
+      });
       return result.signedTxXdr;
     } catch (error) {
-      console.error('❌ Error firmando:', error);
+      console.error("[v0] Error signing:", error);
       throw error;
     }
   };

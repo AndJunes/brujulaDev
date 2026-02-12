@@ -95,8 +95,10 @@ export default function ConfirmDepositPage() {
 
       setStep("signing");
 
-      // Open Freighter to sign the transaction
-      const signedXdr = await signTransaction(unsignedXdr);
+      // Open Freighter to sign the transaction (force Testnet passphrase)
+      const signedXdr = await signTransaction(unsignedXdr, {
+        networkPassphrase: "Test SDF Network ; September 2015",
+      });
 
       if (!signedXdr) {
         throw new Error("La firma fue cancelada o falló");
