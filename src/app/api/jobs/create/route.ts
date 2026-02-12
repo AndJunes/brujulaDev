@@ -42,16 +42,21 @@ export async function POST(request: Request) {
     const engagementId = `brujula_${Date.now()}_${generateId(6)}`;
     const jobId = generateId(25);
 
+    const skillsText = Array.isArray(jobData.skills)
+      ? jobData.skills.join(", ")
+      : jobData.skills || "";
+
     await sql`
       INSERT INTO "Job" (
         id, "employerId", "employerAddress", title, description,
         deliverables, requirements, amount, "estimatedDays",
-        deadline, status, "engagementId", "createdAt"
+        deadline, status, "engagementId", category, skills, "createdAt"
       ) VALUES (
         ${jobId}, ${userId}, ${stellarAddress}, ${jobData.title},
         ${jobData.description}, ${jobData.deliverables?.join(", ") || ""},
         ${jobData.requirements || ""}, ${jobData.amount}, ${jobData.estimatedDays},
-        ${jobData.deadline || null}, 'DRAFT', ${engagementId}, NOW()
+        ${jobData.deadline || null}, 'OPEN', ${engagementId},
+        ${jobData.category || ""}, ${skillsText}, NOW()
       )
     `;
 
