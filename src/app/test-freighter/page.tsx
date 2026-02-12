@@ -31,7 +31,7 @@ export default function TestFreighter() {
         setStatus("✅ Acceso concedido, recarga la página");
       }
     } catch (error) {
-      setStatus(`❌ Error: ${error.message}`);
+      setStatus(`Error: ${error instanceof Error ? error.message : String(error)}`);
       console.error(error);
     }
   };
