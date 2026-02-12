@@ -25,8 +25,7 @@ export async function POST(request: Request) {
       await sql`
         UPDATE "Job"
         SET "escrowContractId" = ${response.contractId},
-            status = 'FUNDED',
-            "updatedAt" = NOW()
+            status = 'FUNDED'
         WHERE id = ${jobId}
       `;
     }
