@@ -20,7 +20,7 @@ export async function GET() {
       success: true,
       message: "Neon conectado correctamente",
       dbInfo: result[0],
-      tables: tables.map((t: { table_name: string }) => t.table_name),
+      tables: tables.map((t) => t.table_name),
     });
   } catch (error) {
     console.error("Error:", error);
