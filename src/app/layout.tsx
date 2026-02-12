@@ -1,18 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const _geistSans = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
-  title: "Brujula - Trabajo Freelance con Pagos Garantizados",
+  title: "Brujula - Pagos Garantizados para Freelancers",
   description:
-    "Marketplace freelance con pagos en USDC protegidos por smart contracts en Stellar. Conecta tu wallet, publica o encuentra trabajo, y cobra seguro.",
+    "Brujula garantiza tu pago en trabajos remotos: el cliente deposita antes, vos cobras seguro al instante y sin comisiones altas. Escrow programable sobre Stellar.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0f5132",
+  themeColor: "#1a3a5c",
   width: "device-width",
   initialScale: 1,
 };
@@ -23,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <body className="antialiased">{children}</body>
     </html>
   );

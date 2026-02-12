@@ -1,64 +1,79 @@
 import Link from "next/link";
+import Image from "next/image";
 
-export function Hero() {
+export default function HeroSection() {
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center px-6 pt-20">
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-1/2 top-1/4 h-96 w-96 -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" />
-        <div className="absolute right-1/4 top-1/2 h-64 w-64 rounded-full bg-accent/10 blur-3xl" />
-      </div>
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-background pt-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left content */}
+          <div className="space-y-8">
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-medium">
+              Pagos garantizados para freelancers
+            </div>
 
-      <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
-        {/* Badge */}
-        <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-sm text-muted-foreground">
-          <span className="h-2 w-2 rounded-full bg-primary" />
-          Pagos protegidos por smart contracts en Stellar
-        </div>
+            <h1 className="font-[family-name:var(--font-heading)] text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight text-foreground text-balance">
+              Cobra seguro.{" "}
+              <span className="text-primary">Siempre.</span>
+            </h1>
 
-        {/* Main headline */}
-        <h1 className="text-balance text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
-          Trabajo freelance con pagos garantizados
-        </h1>
+            <p className="text-lg text-muted-foreground leading-relaxed max-w-lg text-pretty">
+              Brujula garantiza tu pago en trabajos remotos: el cliente deposita antes, vos cobras seguro al instante y sin comisiones altas.
+            </p>
 
-        {/* Subtitle */}
-        <p className="mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground sm:text-xl">
-          Publica o encuentra trabajo. Los fondos quedan en garantia hasta que
-          apruebes la entrega. Sin intermediarios, sin fraude, sin esperas.
-        </p>
+            <div className="flex flex-wrap gap-4">
+              <Link
+                href="/comenzar"
+                className="bg-primary text-primary-foreground px-8 py-3.5 rounded-lg text-base font-semibold hover:opacity-90 transition-opacity"
+              >
+                Comenzar gratis
+              </Link>
+              <a
+                href="#como-funciona"
+                className="border border-border text-foreground px-8 py-3.5 rounded-lg text-base font-semibold hover:bg-muted transition-colors"
+              >
+                Ver como funciona
+              </a>
+            </div>
 
-        {/* CTAs */}
-        <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-          <Link
-            href="/dashboard/employer/create-job"
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-8 py-3.5 text-base font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Publicar Trabajo
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-              <path d="M3 8h10M9 4l4 4-4 4" />
-            </svg>
-          </Link>
-          <a
-            href="#como-funciona"
-            className="inline-flex items-center justify-center rounded-lg border border-border bg-card px-8 py-3.5 text-base font-semibold text-foreground transition-colors hover:bg-secondary"
-          >
-            Como funciona
-          </a>
-        </div>
-
-        {/* Stats */}
-        <div className="mt-20 grid w-full max-w-2xl grid-cols-3 gap-8 border-t border-border pt-10">
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-2xl font-bold text-foreground sm:text-3xl">USDC</span>
-            <span className="text-sm text-muted-foreground">Pagos en stablecoin</span>
+            {/* Trust badges */}
+            <div className="flex items-center gap-4 pt-4">
+              <div className="flex -space-x-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className="w-8 h-8 rounded-full bg-primary/20 border-2 border-background flex items-center justify-center text-xs font-bold text-primary"
+                  >
+                    {String.fromCharCode(64 + i)}
+                  </div>
+                ))}
+              </div>
+              <div>
+                <div className="text-sm font-medium text-accent">{'★★★★★'}</div>
+                <div className="text-xs text-muted-foreground">+200 freelancers confian en Brujula</div>
+              </div>
+            </div>
           </div>
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-2xl font-bold text-foreground sm:text-3xl">2%</span>
-            <span className="text-sm text-muted-foreground">Fee de plataforma</span>
-          </div>
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-2xl font-bold text-foreground sm:text-3xl">~10s</span>
-            <span className="text-sm text-muted-foreground">Confirmacion on-chain</span>
+
+          {/* Right image */}
+          <div className="relative hidden lg:block">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+              <Image
+                src="/images/hero-person.jpg"
+                alt="Freelancer trabajando con Brujula"
+                width={600}
+                height={700}
+                className="object-cover w-full h-[600px]"
+                priority
+              />
+            </div>
+
+            {/* Floating card */}
+            <div className="absolute -bottom-6 -left-6 bg-card rounded-xl p-5 shadow-xl border border-border">
+              <p className="text-xs text-muted-foreground">Comision por transaccion</p>
+              <p className="font-[family-name:var(--font-heading)] text-3xl font-bold text-primary">1.5%</p>
+              <p className="text-xs text-muted-foreground">Sin costos ocultos</p>
+            </div>
           </div>
         </div>
       </div>

@@ -1,94 +1,74 @@
 "use client";
 
 import { useState } from "react";
+import { Menu, X } from "lucide-react";
+import BrujulaLogo from "./brujula-logo";
 import Link from "next/link";
 
-export function Navbar() {
-  const [mobileOpen, setMobileOpen] = useState(false);
+export default function Navbar() {
+  const [open, setOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-center gap-2">
-          <svg
-            width="28"
-            height="28"
-            viewBox="0 0 28 28"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
-            <circle cx="14" cy="14" r="13" stroke="currentColor" strokeWidth="2" className="text-primary" />
-            <path d="M14 4 L14 14 L22 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-primary" />
-            <circle cx="14" cy="14" r="2" fill="currentColor" className="text-accent" />
-          </svg>
-          <span className="text-xl font-bold tracking-tight text-foreground font-sans">
-            Brujula
-          </span>
-        </Link>
-
-        {/* Desktop nav */}
-        <div className="hidden items-center gap-8 md:flex">
-          <a href="#como-funciona" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-            Como funciona
-          </a>
-          <a href="#ventajas" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-            Ventajas
-          </a>
-          <a href="#para-quien" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-            Para quien
-          </a>
-        </div>
-
-        <div className="hidden items-center gap-3 md:flex">
-          <Link
-            href="/dashboard/employer/create-job"
-            className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Conectar Wallet
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <Link href="/" className="flex items-center gap-2">
+            <BrujulaLogo size={32} />
+            <span className="font-[family-name:var(--font-heading)] text-xl font-bold tracking-tight text-foreground">
+              BRUJULA
+            </span>
           </Link>
-        </div>
 
-        {/* Mobile hamburger */}
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="flex items-center justify-center rounded-lg p-2 text-foreground md:hidden"
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d="M18 6L6 18M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d="M3 12h18M3 6h18M3 18h18" />
-            </svg>
-          )}
-        </button>
-      </nav>
-
-      {/* Mobile menu */}
-      {mobileOpen && (
-        <div className="border-t border-border bg-background px-6 py-4 md:hidden">
-          <div className="flex flex-col gap-4">
-            <a href="#como-funciona" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground">
+          <div className="hidden md:flex items-center gap-8">
+            <a href="#como-funciona" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Como funciona
             </a>
-            <a href="#ventajas" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground">
-              Ventajas
+            <a href="#por-que-brujula" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Por que Brujula
             </a>
-            <a href="#para-quien" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground">
-              Para quien
+            <a href="#mercado" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Mercado
             </a>
+            <a href="#modelo" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Modelo
+            </a>
+          </div>
+
+          <div className="hidden md:flex items-center gap-3">
             <Link
-              href="/dashboard/employer/create-job"
-              className="rounded-lg bg-primary px-5 py-2.5 text-center text-sm font-semibold text-primary-foreground"
+              href="/comenzar"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              Conectar Wallet
+              Iniciar sesion
+            </Link>
+            <Link
+              href="/comenzar"
+              className="bg-primary text-primary-foreground px-5 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+            >
+              Comenzar gratis
             </Link>
           </div>
+
+          <button className="md:hidden text-foreground" onClick={() => setOpen(!open)} aria-label="Toggle menu">
+            {open ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
-      )}
-    </header>
+
+        {open && (
+          <div className="md:hidden border-t border-border py-4 space-y-3">
+            <a href="#como-funciona" className="block text-sm text-muted-foreground hover:text-foreground px-2 py-1">Como funciona</a>
+            <a href="#por-que-brujula" className="block text-sm text-muted-foreground hover:text-foreground px-2 py-1">Por que Brujula</a>
+            <a href="#mercado" className="block text-sm text-muted-foreground hover:text-foreground px-2 py-1">Mercado</a>
+            <a href="#modelo" className="block text-sm text-muted-foreground hover:text-foreground px-2 py-1">Modelo</a>
+            <Link
+              href="/comenzar"
+              className="block bg-primary text-primary-foreground px-5 py-2 rounded-lg text-sm font-medium text-center hover:opacity-90 transition-opacity"
+            >
+              Comenzar gratis
+            </Link>
+          </div>
+        )}
+      </div>
+    </nav>
   );
 }

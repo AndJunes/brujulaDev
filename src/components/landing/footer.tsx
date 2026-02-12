@@ -1,32 +1,55 @@
-export function Footer() {
+import BrujulaLogo from "./brujula-logo";
+
+export default function Footer() {
   return (
-    <footer className="border-t border-border px-6 py-12">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 sm:flex-row">
-        <div className="flex items-center gap-2">
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 28 28"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
-            <circle cx="14" cy="14" r="13" stroke="currentColor" strokeWidth="2" className="text-primary" />
-            <path d="M14 4 L14 14 L22 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-primary" />
-            <circle cx="14" cy="14" r="2" fill="currentColor" className="text-accent" />
-          </svg>
-          <span className="text-sm font-semibold text-foreground">Brujula</span>
+    <footer className="py-16" style={{ background: "var(--prussian)", color: "var(--mint)" }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+          {/* Brand */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <BrujulaLogo size={28} />
+              <span className="font-[family-name:var(--font-heading)] text-lg font-bold">BRUJULA</span>
+            </div>
+            <p className="text-sm leading-relaxed" style={{ color: "var(--powder)" }}>
+              La primera capa de confianza verificable para freelancers en LATAM.
+            </p>
+          </div>
+
+          {/* Producto */}
+          <div>
+            <h4 className="font-[family-name:var(--font-heading)] font-semibold mb-4 text-sm">Producto</h4>
+            <ul className="space-y-2 text-sm" style={{ color: "var(--powder)" }}>
+              <li><a href="#como-funciona" className="hover:text-[var(--mint)] transition-colors">Como funciona</a></li>
+              <li><a href="#por-que-brujula" className="hover:text-[var(--mint)] transition-colors">Por que Brujula</a></li>
+              <li><a href="#modelo" className="hover:text-[var(--mint)] transition-colors">Precios</a></li>
+            </ul>
+          </div>
+
+          {/* Recursos */}
+          <div>
+            <h4 className="font-[family-name:var(--font-heading)] font-semibold mb-4 text-sm">Recursos</h4>
+            <ul className="space-y-2 text-sm" style={{ color: "var(--powder)" }}>
+              <li><span className="cursor-default">Blog</span></li>
+              <li><span className="cursor-default">Documentacion</span></li>
+              <li><span className="cursor-default">FAQ</span></li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h4 className="font-[family-name:var(--font-heading)] font-semibold mb-4 text-sm">Legal</h4>
+            <ul className="space-y-2 text-sm" style={{ color: "var(--powder)" }}>
+              <li><span className="cursor-default">Terminos</span></li>
+              <li><span className="cursor-default">Privacidad</span></li>
+              <li><span className="cursor-default">Compliance</span></li>
+            </ul>
+          </div>
         </div>
 
-        <div className="flex items-center gap-6 text-sm text-muted-foreground">
-          <span>Powered by Stellar</span>
-          <span className="hidden sm:inline" aria-hidden="true">|</span>
-          <span>Escrow by Trustless Work</span>
+        <div className="border-t pt-8 text-center text-sm" style={{ borderColor: "var(--oxford)", color: "var(--powder)" }}>
+          2026 Brujula. Todos los derechos reservados.
         </div>
-
-        <p className="text-sm text-muted-foreground">
-          Brujula 2026. Hecho en LATAM.
-        </p>
       </div>
     </footer>
   );
