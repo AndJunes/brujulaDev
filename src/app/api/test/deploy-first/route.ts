@@ -5,7 +5,7 @@ export async function POST() {
   try {
     const client = getTrustlessWorkClient();
     
-    const response = await client.deploySingleReleaseContract({
+    const response = await client.deploySingleReleaseEscrow({
       signer: "GB7XVLLHZF62WL5BEMVCP7SXBQBMCUPK74XFDKRUWWZ6QUM5NNV7VQXT",
       engagementId: `test_${Date.now()}`,
       title: "Mi primer trabajo en Brújula",
