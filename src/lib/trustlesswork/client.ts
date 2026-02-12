@@ -1,4 +1,3 @@
-// src/lib/trustlesswork/client.ts
 import {
   DeploySingleReleaseEscrowPayload,
   FundEscrowPayload,
@@ -32,43 +31,38 @@ export class TrustlessWorkClient {
 
   private async request(endpoint: string, options?: RequestInit) {
     const url = `${this.apiUrl}${endpoint}`;
-    console.log(`🌐 Trustless Work: ${options?.method || 'GET'} ${url}`);
+    console.log(`[v0] Trustless Work: ${options?.method || 'GET'} ${url}`);
 
     const response = await fetch(url, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': this.apiKey,
+        'Authorization': `Bearer ${this.apiKey}`,
         ...options?.headers,
       },
     });
 
     if (!response.ok) {
       const error = await response.text();
+      console.log(`[v0] Trustless Work error response: ${response.status} - ${error}`);
       throw new Error(`Trustless Work API error (${response.status}): ${error}`);
     }
 
     return response.json();
   }
 
-  // ============ DEPLOYER - SINGLE RELEASE ============
+  // ============ DEPLOYER ============
 
-  /**
-   * Despliega un nuevo escrow de liberación única
-   * POST /deployer/single-release
-   * 
-   * Devuelve: { status: "SUCCESS", unsignedTransaction: string }
-   */
   async deploySingleReleaseEscrow(params: DeploySingleReleaseEscrowPayload) {
     const response = await this.request('/deployer/single-release', {
       method: 'POST',
       body: JSON.stringify(params),
     });
 
-    console.log('📦 Respuesta deploySingleReleaseEscrow:', JSON.stringify(response, null, 2));
+    console.log('[v0] deploySingleReleaseEscrow response:', JSON.stringify(response, null, 2));
 
     if (!response.unsignedTransaction) {
-      throw new Error(`Trustless Work respondió pero falta unsignedTransaction: ${JSON.stringify(response)}`);
+      throw new Error(`Trustless Work missing unsignedTransaction: ${JSON.stringify(response)}`);
     }
 
     return {
@@ -77,44 +71,24 @@ export class TrustlessWorkClient {
     };
   }
 
-  // ============ ESCROW ============
+  // ============ SINGLE RELEASE ESCROW ============
 
-  /**
-   * ⚠️ DEPRECATED - Usar deploySingleReleaseEscrow en su lugar
-   * Este endpoint ya no existe en la API
-   */
-  async initializeSingleReleaseEscrow(_params: never) {
-    throw new Error('❌ initializeSingleReleaseEscrow está DEPRECATED. Usa deploySingleReleaseEscrow en su lugar.');
-  }
-
-  /**
-   * Fondea un escrow existente
-   * POST /escrow/fund
-   */
   async fundEscrow(params: FundEscrowPayload) {
-    return this.request('/escrow/fund', {
+    return this.request('/escrow/single-release/fund-escrow', {
       method: 'POST',
       body: JSON.stringify(params),
     });
   }
 
-  /**
-   * Actualiza un escrow de liberación única
-   * PUT /escrow/update/single-release
-   */
   async updateSingleReleaseEscrow(params: UpdateSingleReleaseEscrowPayload) {
-    return this.request('/escrow/update/single-release', {
+    return this.request('/escrow/single-release/update-escrow', {
       method: 'PUT',
       body: JSON.stringify(params),
     });
   }
 
-  /**
-   * Libera fondos de un escrow de liberación única
-   * POST /escrow/release-funds/single-release
-   */
   async releaseFundsSingleRelease(params: SingleReleaseReleaseFundsPayload) {
-    return this.request('/escrow/release-funds/single-release', {
+    return this.request('/escrow/single-release/release-funds', {
       method: 'POST',
       body: JSON.stringify(params),
     });
@@ -122,23 +96,15 @@ export class TrustlessWorkClient {
 
   // ============ MILESTONE ============
 
-  /**
-   * Aprueba un hito
-   * POST /milestone/approve
-   */
   async approveMilestone(params: ApproveMilestonePayload) {
-    return this.request('/milestone/approve', {
+    return this.request('/escrow/single-release/approve-milestone', {
       method: 'POST',
       body: JSON.stringify(params),
     });
   }
 
-  /**
-   * Cambia el estado de un hito
-   * POST /milestone/change-status
-   */
   async changeMilestoneStatus(params: ChangeMilestoneStatusPayload) {
-    return this.request('/milestone/change-status', {
+    return this.request('/escrow/single-release/change-milestone-status', {
       method: 'POST',
       body: JSON.stringify(params),
     });
@@ -146,23 +112,15 @@ export class TrustlessWorkClient {
 
   // ============ DISPUTE ============
 
-  /**
-   * Inicia una disputa en un escrow de liberación única
-   * POST /dispute/start
-   */
   async startDisputeSingleRelease(params: SingleReleaseStartDisputePayload) {
-    return this.request('/dispute/start', {
+    return this.request('/escrow/single-release/dispute-escrow', {
       method: 'POST',
       body: JSON.stringify(params),
     });
   }
 
-  /**
-   * Resuelve una disputa en un escrow de liberación única
-   * POST /dispute/resolve
-   */
   async resolveDisputeSingleRelease(params: SingleReleaseResolveDisputePayload) {
-    return this.request('/dispute/resolve', {
+    return this.request('/escrow/single-release/resolve-dispute', {
       method: 'POST',
       body: JSON.stringify(params),
     });
@@ -170,41 +128,22 @@ export class TrustlessWorkClient {
 
   // ============ TRANSACTION ============
 
-  /**
-   * Envía una transacción firmada a Stellar
-   * POST /transaction/send
-   * 
-   * Devuelve: { contractId: string, status: string, ... }
-   */
   async sendTransaction(params: SendTransactionPayload) {
-    const response = await this.request('/transaction/send', {
+    const response = await this.request('/helper/send-transaction', {
       method: 'POST',
       body: JSON.stringify(params),
     });
 
-    console.log('📦 Respuesta sendTransaction:', JSON.stringify(response, null, 2));
-
-    if (!response.contractId) {
-      throw new Error(`Trustless Work respondió pero falta contractId: ${JSON.stringify(response)}`);
-    }
-
+    console.log('[v0] sendTransaction response:', JSON.stringify(response, null, 2));
     return response;
   }
 
-  // ============ INDEXER ============
+  // ============ HELPER / INDEXER ============
 
-  /**
-   * Obtiene escrows por rol
-   * GET /escrow/indexer/role?role=...&roleAddress=...
-   */
   async getEscrowsByRole(params: GetEscrowsFromIndexerByRoleParams) {
     const queryParams = new URLSearchParams();
-    
-    // Parámetros obligatorios
     queryParams.append('role', params.role);
     queryParams.append('roleAddress', params.roleAddress);
-    
-    // Parámetros opcionales
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.orderDirection) queryParams.append('orderDirection', params.orderDirection);
     if (params.orderBy) queryParams.append('orderBy', params.orderBy);
@@ -219,22 +158,14 @@ export class TrustlessWorkClient {
     if (params.type) queryParams.append('type', params.type);
     if (params.validateOnChain !== undefined) queryParams.append('validateOnChain', params.validateOnChain.toString());
 
-    return this.request(`/escrow/indexer/role?${queryParams}`, {
+    return this.request(`/helper/get-escrows-by-role?${queryParams}`, {
       method: 'GET',
     });
   }
 
-  /**
-   * Obtiene escrows por signer
-   * GET /escrow/indexer/signer?signer=...
-   */
   async getEscrowsBySigner(params: GetEscrowsFromIndexerBySignerParams) {
     const queryParams = new URLSearchParams();
-    
-    // Parámetro obligatorio
     queryParams.append('signer', params.signer);
-    
-    // Parámetros opcionales
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.orderDirection) queryParams.append('orderDirection', params.orderDirection);
     if (params.orderBy) queryParams.append('orderBy', params.orderBy);
@@ -249,79 +180,56 @@ export class TrustlessWorkClient {
     if (params.type) queryParams.append('type', params.type);
     if (params.validateOnChain !== undefined) queryParams.append('validateOnChain', params.validateOnChain.toString());
 
-    return this.request(`/escrow/indexer/signer?${queryParams}`, {
+    return this.request(`/helper/get-escrows-by-signer?${queryParams}`, {
       method: 'GET',
     });
   }
 
-  /**
-   * Obtiene escrows por IDs de contrato
-   * GET /escrow/indexer/contract-ids?contractIds[]=...
-   */
   async getEscrowsByContractIds(params: GetEscrowFromIndexerByContractIdsParams) {
     const queryParams = new URLSearchParams();
-    
     params.contractIds.forEach((id: string) => {
       queryParams.append('contractIds[]', id);
     });
-    
     if (params.validateOnChain !== undefined) {
       queryParams.append('validateOnChain', params.validateOnChain.toString());
     }
 
-    return this.request(`/escrow/indexer/contract-ids?${queryParams}`, {
+    return this.request(`/helper/get-escrow-by-contract-ids?${queryParams}`, {
       method: 'GET',
     });
   }
 
-  /**
-   * Obtiene el balance de múltiples escrows
-   * GET /escrow/balance?addresses[]=...
-   */
   async getMultipleEscrowBalance(params: GetBalanceParams) {
     const queryParams = new URLSearchParams();
-    
     params.addresses.forEach((address: string) => {
       queryParams.append('addresses[]', address);
     });
 
-    return this.request(`/escrow/balance?${queryParams}`, {
+    return this.request(`/helper/get-multiple-escrow-balance?${queryParams}`, {
       method: 'GET',
     });
   }
 
-  // ============ UTILS ============
+  // ============ INDEXER ============
 
-  /**
-   * Actualiza datos del escrow desde un hash de transacción
-   * POST /escrow/update-from-tx-hash
-   */
   async updateFromTxHash(params: UpdateFromTxHashPayload) {
-    return this.request('/escrow/update-from-tx-hash', {
-      method: 'POST',
+    return this.request('/indexer/update-from-txhash', {
+      method: 'PUT',
       body: JSON.stringify(params),
     });
   }
 
-  // ============ USERS (OPCIONAL, SI LOS NECESITAS) ============
+  // ============ USERS ============
 
-  /**
-   * Crea un usuario
-   * POST /users/create-user
-   */
   async createUser(params: { name: string; email: string; stellarAddress: string }) {
-    return this.request('/users/create-user', {
+    return this.request('/user/create', {
       method: 'POST',
       body: JSON.stringify(params),
     });
   }
 
-  /**
-   * Obtiene un usuario por ID
-   * GET /users/get-user?id=...
-   */
   async getUser(id: string) {
-    return this.request(`/users/get-user?id=${id}`, {
+    return this.request(`/user/${id}`, {
       method: 'GET',
     });
   }
@@ -336,7 +244,7 @@ export function getTrustlessWorkClient() {
     const apiKey = process.env.TRUSTLESS_WORK_API_KEY;
 
     if (!apiUrl || !apiKey) {
-      throw new Error('❌ Faltan TRUSTLESS_WORK_API_URL y TRUSTLESS_WORK_API_KEY en .env.local');
+      throw new Error('Faltan TRUSTLESS_WORK_API_URL y/o TRUSTLESS_WORK_API_KEY en variables de entorno');
     }
 
     const baseUrl = apiUrl.replace(/\/$/, '');
