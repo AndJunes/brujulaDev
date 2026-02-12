@@ -36,15 +36,13 @@ export default function EmployerDashboard() {
 
   const fetchJobs = async (walletAddress: string) => {
     try {
-      console.log("[v0] Fetching jobs for wallet:", walletAddress);
       const res = await fetch(`/api/jobs?employer=${walletAddress}`);
       const data = await res.json();
-      console.log("[v0] API response:", JSON.stringify(data));
       if (res.ok) {
         setJobs(data.jobs || []);
       }
-    } catch (err) {
-      console.log("[v0] Error fetching jobs:", err);
+    } catch {
+      // No jobs yet
     } finally {
       setLoading(false);
     }
