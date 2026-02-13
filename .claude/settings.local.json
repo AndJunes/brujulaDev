@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx next build:*)",
+      "WebFetch(domain:stellar.expert)",
+      "mcp__claude_ai_trustlesswork__get_multiple_escrow_balances",
+      "mcp__claude_ai_trustlesswork__get_escrow_from_indexer_by_contract_ids",
+      "Bash(curl:*)",
+      "mcp__claude_ai_trustlesswork__get_escrows_by_role",
+      "mcp__claude_ai_SCF__searchDocumentation",
+      "mcp__claude_ai_trustlesswork__update_escrow",
+      "WebSearch",
+      "WebFetch(domain:docs.trustlesswork.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(npm ls:*)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(npm view:*)",
+      "Bash(npm pack:*)"
+    ]
+  }
+}

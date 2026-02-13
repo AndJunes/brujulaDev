@@ -7,40 +7,37 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { signedXdr, jobId } = body;
 
-    if (!signedXdr) {
+    if (!signedXdr || !jobId) {
       return NextResponse.json(
-        { error: "Falta signedXdr" },
+        { error: "Faltan campos requeridos: signedXdr, jobId" },
         { status: 400 }
       );
     }
 
     const client = getTrustlessWorkClient();
 
-    // Send the signed transaction to Stellar via Trustless Work
+    // Send the signed fund transaction to Stellar
     const response = await client.sendTransaction({ signedXdr });
 
-    // If we got a contractId back, save it on the job (deploy step only, not yet funded)
-    if (response.contractId && jobId) {
-      const sql = getDb();
-      await sql`
-        UPDATE "Job"
-        SET "escrowContractId" = ${response.contractId},
-            status = 'OPEN'
-        WHERE id = ${jobId}
-      `;
-    }
+    // Now the escrow is actually funded - update job status
+    const sql = getDb();
+    await sql`
+      UPDATE "Job"
+      SET status = 'FUNDED'
+      WHERE id = ${jobId}
+    `;
 
     return NextResponse.json({
       success: true,
-      contractId: response.contractId,
       status: response.status,
+      transactionHash: response.transactionHash,
     });
   } catch (error) {
-    console.error("Error sending transaction:", error);
+    console.error("Error sending fund transaction:", error);
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Error al enviar transaccion",
+        error: error instanceof Error ? error.message : "Error al enviar fondeo",
       },
       { status: 500 }
     );

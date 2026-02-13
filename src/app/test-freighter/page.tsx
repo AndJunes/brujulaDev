@@ -14,7 +14,7 @@ export default function TestFreighter() {
   const testFreighter = async () => {
     try {
       setStatus("1. Verificando si Freighter está disponible...");
-      console.log("window.freighter:", window.freighter);
+      console.log("window.freighter:", (window as unknown as Record<string, unknown>).freighter);
       
       setStatus("2. Llamando a isConnected()...");
       const connected = await isConnected();

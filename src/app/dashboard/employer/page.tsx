@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import BrujulaLogo from "@/components/landing/brujula-logo";
+import NotificationBell from "@/components/notifications/bell";
+import { truncateAddress } from "@/lib/utils";
 
 interface Job {
   id: string;
@@ -15,10 +17,20 @@ interface Job {
   escrowContractId: string | null;
 }
 
+interface Agreement {
+  id: string;
+  jobTitle: string;
+  jobAmount: number;
+  freelancerAddress: string;
+  status: string;
+}
+
 export default function EmployerDashboard() {
   const router = useRouter();
   const [wallet, setWallet] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [agreements, setAgreements] = useState<Agreement[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -31,18 +43,34 @@ export default function EmployerDashboard() {
     }
 
     setWallet(storedWallet);
-    fetchJobs(storedWallet);
+    fetchData(storedWallet);
   }, [router]);
 
-  const fetchJobs = async (walletAddress: string) => {
+  const fetchData = async (walletAddress: string) => {
     try {
-      const res = await fetch(`/api/jobs?employer=${walletAddress}`);
-      const data = await res.json();
-      if (res.ok) {
+      const [jobsRes, agreementsRes] = await Promise.all([
+        fetch(`/api/jobs?employer=${walletAddress}`),
+        fetch(`/api/agreements?employerAddress=${walletAddress}`),
+      ]);
+
+      if (jobsRes.ok) {
+        const data = await jobsRes.json();
         setJobs(data.jobs || []);
       }
+
+      if (agreementsRes.ok) {
+        const data = await agreementsRes.json();
+        setAgreements(data.agreements || []);
+      }
+
+      // Fetch userId for notifications
+      const userRes = await fetch(`/api/users?stellarAddress=${walletAddress}`);
+      if (userRes.ok) {
+        const userData = await userRes.json();
+        if (userData.userId) setUserId(userData.userId);
+      }
     } catch {
-      // No jobs yet
+      // Error loading
     } finally {
       setLoading(false);
     }
@@ -59,7 +87,38 @@ export default function EmployerDashboard() {
       DRAFT: { label: "Borrador", color: "bg-muted text-muted-foreground" },
       OPEN: { label: "Abierto", color: "bg-blue-100 text-blue-700" },
       FUNDED: { label: "Fondeado", color: "bg-green-100 text-green-700" },
+      ASSIGNED: { label: "Asignado", color: "bg-purple-100 text-purple-700" },
       IN_PROGRESS: { label: "En progreso", color: "bg-yellow-100 text-yellow-700" },
+      IN_REVIEW: { label: "En revision", color: "bg-orange-100 text-orange-700" },
+      COMPLETED: { label: "Completado", color: "bg-green-100 text-green-700" },
+    };
+    return map[status] || { label: status, color: "bg-muted text-muted-foreground" };
+  };
+
+  const getJobAction = (job: Job) => {
+    switch (job.status) {
+      case "OPEN":
+        return { label: "Ver postulaciones", href: `/dashboard/employer/jobs/${job.id}/applications` };
+      case "FUNDED":
+        return { label: "Ver postulaciones", href: `/dashboard/employer/jobs/${job.id}/applications` };
+      case "ASSIGNED":
+        return { label: "Ver postulaciones", href: `/dashboard/employer/jobs/${job.id}/applications` };
+      case "IN_REVIEW": {
+        const agreement = agreements.find((a) => a.status === "WORK_DELIVERED" || a.status === "EMPLOYER_APPROVED");
+        return agreement
+          ? { label: "Revisar entrega", href: `/dashboard/employer/agreements/${agreement.id}/review` }
+          : { label: "Ver", href: null };
+      }
+      default:
+        return { label: null, href: null };
+    }
+  };
+
+  const getAgreementStatusLabel = (status: string) => {
+    const map: Record<string, { label: string; color: string }> = {
+      ACTIVE: { label: "Activo", color: "bg-blue-100 text-blue-700" },
+      WORK_DELIVERED: { label: "Entrega recibida", color: "bg-orange-100 text-orange-700" },
+      EMPLOYER_APPROVED: { label: "Aprobado", color: "bg-green-100 text-green-700" },
       COMPLETED: { label: "Completado", color: "bg-green-100 text-green-700" },
     };
     return map[status] || { label: status, color: "bg-muted text-muted-foreground" };
@@ -77,10 +136,11 @@ export default function EmployerDashboard() {
             </span>
           </Link>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <NotificationBell userId={userId} />
             {wallet && (
               <span className="hidden sm:inline text-sm text-muted-foreground font-mono">
-                {wallet.slice(0, 6)}...{wallet.slice(-4)}
+                {truncateAddress(wallet)}
               </span>
             )}
             <button
@@ -121,7 +181,7 @@ export default function EmployerDashboard() {
           {[
             { label: "Publicados", value: jobs.length },
             { label: "Fondeados", value: jobs.filter((j) => j.status === "FUNDED").length },
-            { label: "En progreso", value: jobs.filter((j) => j.status === "IN_PROGRESS").length },
+            { label: "Asignados", value: jobs.filter((j) => j.status === "ASSIGNED" || j.status === "IN_REVIEW").length },
             { label: "Completados", value: jobs.filter((j) => j.status === "COMPLETED").length },
           ].map((stat) => (
             <div key={stat.label} className="bg-card border border-border rounded-xl p-4">
@@ -137,7 +197,7 @@ export default function EmployerDashboard() {
         {loading ? (
           <div className="text-center py-16">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent mb-3" />
-            <p className="text-muted-foreground">Cargando trabajos...</p>
+            <p className="text-muted-foreground">Cargando...</p>
           </div>
         ) : jobs.length === 0 ? (
           <div className="text-center py-16 bg-card border border-border rounded-xl">
@@ -160,38 +220,87 @@ export default function EmployerDashboard() {
             </Link>
           </div>
         ) : (
-          <div className="space-y-3">
-            <h2 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-foreground">
+          <>
+            <h2 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-foreground mb-3">
               Tus trabajos
             </h2>
-            {jobs.map((job) => {
-              const s = statusLabel(job.status);
-              return (
-                <div
-                  key={job.id}
-                  className="bg-card border border-border rounded-xl p-5 flex flex-col sm:flex-row sm:items-center gap-4"
-                >
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-foreground truncate">{job.title}</h3>
-                    <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
-                      <span className="capitalize">{job.category}</span>
-                      <span>{"$"}{job.amount} USDC</span>
+            <div className="space-y-3 mb-10">
+              {jobs.map((job) => {
+                const s = statusLabel(job.status);
+                const action = getJobAction(job);
+                return (
+                  <div
+                    key={job.id}
+                    className="bg-card border border-border rounded-xl p-5 flex flex-col sm:flex-row sm:items-center gap-4"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-foreground truncate">{job.title}</h3>
+                      <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
+                        {job.category && <span className="capitalize">{job.category}</span>}
+                        <span>{"$"}{job.amount} USDC</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${s.color}`}>
+                        {s.label}
+                      </span>
+                      {action.href && (
+                        <Link
+                          href={action.href}
+                          className="text-sm font-medium text-primary hover:underline"
+                        >
+                          {action.label}
+                        </Link>
+                      )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${s.color}`}>
-                      {s.label}
-                    </span>
-                    {job.escrowContractId && (
-                      <span className="text-xs text-muted-foreground font-mono hidden md:inline">
-                        {job.escrowContractId.slice(0, 8)}...
-                      </span>
-                    )}
-                  </div>
+                );
+              })}
+            </div>
+
+            {/* Agreements section */}
+            {agreements.length > 0 && (
+              <>
+                <h2 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-foreground mb-3">
+                  Acuerdos activos
+                </h2>
+                <div className="space-y-3">
+                  {agreements.map((agreement) => {
+                    const s = getAgreementStatusLabel(agreement.status);
+                    const reviewHref = agreement.status === "WORK_DELIVERED"
+                      ? `/dashboard/employer/agreements/${agreement.id}/review`
+                      : null;
+                    return (
+                      <div
+                        key={agreement.id}
+                        className="bg-card border border-border rounded-xl p-5 flex items-center justify-between"
+                      >
+                        <div>
+                          <h3 className="font-medium text-foreground">{agreement.jobTitle}</h3>
+                          <p className="text-sm text-muted-foreground mt-0.5">
+                            {"$"}{agreement.jobAmount} USDC - Freelancer: {truncateAddress(agreement.freelancerAddress)}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${s.color}`}>
+                            {s.label}
+                          </span>
+                          {reviewHref && (
+                            <Link
+                              href={reviewHref}
+                              className="text-sm font-medium text-primary hover:underline"
+                            >
+                              Revisar
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </div>
+              </>
+            )}
+          </>
         )}
       </main>
     </div>

@@ -73,14 +73,10 @@ export default function CreateJobPage() {
         throw new Error(data.error || "Error al crear el trabajo");
       }
 
-      console.log('✅ Trabajo creado:', data);
+      console.log('Trabajo creado:', data);
 
-      // 3. Guardar jobId en sessionStorage
-      sessionStorage.setItem("pendingJobId", data.jobId);
-      sessionStorage.setItem("pendingEngagementId", data.engagementId);
-
-      // 4. Navegar a pantalla de depósito
-      router.push("/dashboard/employer/create-job/confirm-deposit");
+      // Navegar al dashboard del employer
+      router.push("/dashboard/employer");
       
     } catch (error) {
       console.error("❌ Error:", error);
@@ -578,7 +574,7 @@ export default function CreateJobPage() {
             onClick={handleSubmit}
             className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
           >
-            Continuar a Depositar
+            Publicar trabajo
           </button>
         </div>
       </div>

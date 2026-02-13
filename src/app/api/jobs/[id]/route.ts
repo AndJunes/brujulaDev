@@ -10,7 +10,9 @@ export async function GET(
     const sql = getDb();
 
     const rows = await sql`
-      SELECT id, title, description, amount, "estimatedDays", status, "engagementId", "escrowContractId"
+      SELECT id, title, description, deliverables, requirements, amount,
+             "estimatedDays", deadline, status, "engagementId", "escrowContractId",
+             "employerAddress", category, skills, "createdAt"
       FROM "Job"
       WHERE id = ${id}
     `;

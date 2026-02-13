@@ -20,7 +20,7 @@ export default function ComenzarPage() {
     setIsLoading(true);
     try {
       // If not connected, connect wallet first
-      let walletAddress = address;
+      let walletAddress: string | null | undefined = address;
       if (!isConnected || !walletAddress) {
         walletAddress = await connect();
         if (!walletAddress) {
