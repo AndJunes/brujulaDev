@@ -1,4 +1,4 @@
-// prisma/schema.prisma
+//3FN
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,12 +8,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============ 1. TABLAS BASE E INDEPENDIENTES ============
-
 model User {
   id             String   @id @default(cuid())
-  //en el SQL no tiene UNIQUE, pero suele llevarlo
-  stellarAddress String   
+  stellarAddress String   @unique
   displayName    String?
   role           String?
   balance        Float?   @default(0)
@@ -22,13 +19,9 @@ model User {
   lastSeenAt     DateTime
   metadata       Json?
 
-  // Relaciones
-  jobs                    Job[]                     @relation("EmployerJobs")
-  applications            Application[]             @relation("FreelancerApplications")
-  agreementsAsEmployer    Agreement[]               @relation("EmployerAgreements")
-  agreementsAsFreelancer  Agreement[]               @relation("FreelancerAgreements")
-  notifications           Notification[]            @relation("UserNotifications")
-  notificationPreferences NotificationPreferences?  @relation("UserNotificationPreferences")
+  jobs                   Job[]         @relation("EmployerJobs")
+  applications           Application[] @relation("FreelancerApplications")
+  agreementsAsFreelancer Agreement[]   @relation("FreelancerAgreements")
 }
 
 model Skill {
@@ -37,37 +30,9 @@ model Skill {
   jobs  JobSkill[]
 }
 
-//TABLAS DEPENDIENTES DE USER
-
-model Notification {
-  id        String   @id @default(cuid())
-  userId    String
-  type      String
-  title     String
-  message   String
-  actionUrl String?
-  read      Boolean  @default(false)
-  createdAt DateTime @default(now())
-
-  user      User     @relation("UserNotifications", fields: [userId], references: [id], onDelete: Restrict)
-}
-
-model NotificationPreferences {
-  id                  String   @id @default(cuid())
-  userId              String   @unique
-  contactMethod       String?
-  contactValue        String?
-  notifyOnApplication Boolean  @default(true)
-  notifyOnDelivery    Boolean  @default(true)
-  notifyOnPayment     Boolean  @default(true)
-  
-  user                User     @relation("UserNotificationPreferences", fields: [userId], references: [id], onDelete: Restrict)
-}
-
 model Job {
   id               String    @id @default(cuid())
   employerId       String
-  employerAddress  String
   title            String
   description      String
   deliverables     String?
@@ -76,7 +41,7 @@ model Job {
   estimatedDays    Int?
   deadline         DateTime?
   status           String    @default("DRAFT")
-  escrowContractId String?
+  escrowContractId String?   @unique
   escrowAddress    String?
   engagementId     String?
   createdAt        DateTime  @default(now())
@@ -87,33 +52,24 @@ model Job {
   metadata         Json?
   category         String?
 
-  // Relaciones
   employer         User          @relation("EmployerJobs", fields: [employerId], references: [id], onDelete: Restrict)
   skills           JobSkill[]
   applications     Application[]
   agreement        Agreement?
-  transactions     Transaction[]
 }
-
-// TABLAS DE RELACIÓN MUCHOS A MUCHOS (1FN) 
 
 model JobSkill {
   jobId   String
   skillId String
-
   job     Job   @relation(fields: [jobId], references: [id], onDelete: Cascade)
   skill   Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
-
   @@id([jobId, skillId])
 }
-
-// TABLAS TRANSACCIONALES Y DE FLUJO 
 
 model Application {
   id                   String    @id @default(cuid())
   jobId                String
   freelancerId         String
-  freelancerAddress    String
   coverLetter          String?
   portfolioUrl         String?
   proposedDeliveryDate DateTime?
@@ -122,7 +78,6 @@ model Application {
   acceptedAt           DateTime?
   rejectedAt           DateTime?
 
-  // Relaciones
   job                  Job       @relation(fields: [jobId], references: [id], onDelete: Restrict)
   freelancer           User      @relation("FreelancerApplications", fields: [freelancerId], references: [id], onDelete: Restrict)
 }
@@ -130,11 +85,7 @@ model Application {
 model Agreement {
   id                    String    @id @default(cuid())
   jobId                 String    @unique
-  employerId            String
-  employerAddress       String
   freelancerId          String
-  freelancerAddress     String
-  escrowContractId      String
   status                String    @default("ACTIVE")
   deliveryUrl           String?
   deliveryNote          String?
@@ -147,12 +98,9 @@ model Agreement {
   completedAt           DateTime?
   disputedAt            DateTime?
 
-  // Relaciones
-  employer              User            @relation("EmployerAgreements", fields: [employerId], references: [id], onDelete: Restrict)
-  freelancer            User            @relation("FreelancerAgreements", fields: [freelancerId], references: [id], onDelete: Restrict)
   job                   Job             @relation(fields: [jobId], references: [id], onDelete: Restrict)
+  freelancer            User            @relation("FreelancerAgreements", fields: [freelancerId], references: [id], onDelete: Restrict)
   deliveryFiles         AgreementFile[]
-  transactions          Transaction[]
 }
 
 model AgreementFile {
@@ -163,22 +111,4 @@ model AgreementFile {
   uploadedAt  DateTime  @default(now())
 
   agreement   Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
-}
-
-model Transaction {
-  id          String    @id @default(cuid())
-  agreementId String?
-  jobId       String?
-  type        String
-  amount      Float
-  txHash      String?
-  status      String    @default("PENDING")
-  fromAddress String?
-  toAddress   String?
-  metadata    Json?
-  createdAt   DateTime  @default(now())
-  confirmedAt DateTime?
-
-  agreement   Agreement? @relation(fields: [agreementId], references: [id], onDelete: SetNull)
-  job         Job?       @relation(fields: [jobId], references: [id], onDelete: SetNull)
 }
