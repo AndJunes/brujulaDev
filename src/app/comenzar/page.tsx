@@ -19,7 +19,6 @@ export default function ComenzarPage() {
 
     setIsLoading(true);
     try {
-      // If not connected, connect wallet first
       let walletAddress: string | null | undefined = address;
       if (!isConnected || !walletAddress) {
         walletAddress = await connect();
@@ -29,82 +28,82 @@ export default function ComenzarPage() {
         }
       }
 
-      // Store role in sessionStorage for the dashboard
       sessionStorage.setItem("brujula_role", selectedRole);
       sessionStorage.setItem("brujula_wallet", walletAddress);
 
-      // Route to the correct dashboard
-      if (selectedRole === "employer") {
-        router.push("/dashboard/employer");
-      } else {
-        router.push("/dashboard/freelancer");
-      }
+      router.push(
+        selectedRole === "employer"
+          ? "/dashboard/employer"
+          : "/dashboard/freelancer"
+      );
     } catch {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-neutral-950 text-neutral-100">
       {/* Header */}
-      <header className="p-4 sm:p-6">
-        <Link href="/" className="inline-flex items-center gap-2">
+      <header className="p-5 sm:p-7 border-b border-white/5">
+        <Link href="/" className="inline-flex items-center gap-2 opacity-90 hover:opacity-100 transition">
           <BrujulaLogo size={28} />
-          <span className="font-[family-name:var(--font-heading)] text-lg font-bold text-foreground">
+          <span className="font-[family-name:var(--font-heading)] text-lg tracking-wide font-semibold">
             BRUJULA
           </span>
         </Link>
       </header>
 
       {/* Main */}
-      <main className="flex-1 flex items-center justify-center px-4 pb-12">
-        <div className="w-full max-w-lg">
-          <div className="text-center mb-10">
-            <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-bold text-foreground mb-3 text-balance">
-              Como queres usar Brujula?
+      <main className="flex-1 flex items-center justify-center px-6 pb-16">
+        <div className="w-full max-w-xl">
+
+          {/* Title */}
+          <div className="text-center mb-12">
+            <h1 className="font-[family-name:var(--font-heading)] text-4xl font-semibold tracking-tight mb-3">
+              ¿Cómo vas a operar en Brújula?
             </h1>
-            <p className="text-muted-foreground text-base">
-              Selecciona tu rol para personalizar tu experiencia
+            <p className="text-neutral-400">
+              Selecciona tu rol para configurar tu entorno profesional
             </p>
           </div>
 
           {/* Role cards */}
-          <div className="grid gap-4 mb-8">
+          <div className="space-y-4 mb-10">
+
             {/* Employer */}
             <button
               onClick={() => setSelectedRole("employer")}
-              className={`relative text-left p-6 rounded-xl border-2 transition-all ${
+              className={`w-full text-left p-6 rounded-xl border transition-all duration-200
+              ${
                 selectedRole === "employer"
-                  ? "border-primary bg-primary/5 shadow-md"
-                  : "border-border bg-card hover:border-accent hover:shadow-sm"
+                  ? "border-[#2F4E79] bg-[#1F2A44]/40 shadow-[0_0_0_1px_rgba(47,78,121,0.4)]"
+                  : "border-white/10 bg-white/[0.02] hover:border-white/20"
               }`}
             >
               <div className="flex items-start gap-4">
-                <div
-                  className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 ${
-                    selectedRole === "employer"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
+                <div className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0
+                  ${selectedRole === "employer"
+                    ? "bg-[#2F4E79]"
+                    : "bg-white/5"}`}>
+                  
+                  {/* work_outline */}
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round"
+                      d="M3 7h18M7 7V5a2 2 0 012-2h6a2 2 0 012 2v2m-9 0h10v12H6V7z" />
                   </svg>
                 </div>
+
                 <div className="flex-1">
-                  <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-foreground mb-1">
-                    Soy Empleador
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Quiero publicar trabajos, contratar freelancers y pagar de forma segura con escrow en USDC.
+                  <h3 className="font-semibold text-lg mb-1">Soy Empleador</h3>
+                  <p className="text-sm text-neutral-400 leading-relaxed">
+                    Publicar trabajos, contratar talento y pagar con seguridad mediante escrow en USDC.
                   </p>
                 </div>
+
                 {selectedRole === "employer" && (
-                  <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center shrink-0">
-                    <svg className="w-4 h-4 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                    </svg>
-                  </div>
+                  <svg className="w-6 h-6 text-[#9BB8D3]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
                 )}
               </div>
             </button>
@@ -112,38 +111,37 @@ export default function ComenzarPage() {
             {/* Freelancer */}
             <button
               onClick={() => setSelectedRole("freelancer")}
-              className={`relative text-left p-6 rounded-xl border-2 transition-all ${
+              className={`w-full text-left p-6 rounded-xl border transition-all duration-200
+              ${
                 selectedRole === "freelancer"
-                  ? "border-primary bg-primary/5 shadow-md"
-                  : "border-border bg-card hover:border-accent hover:shadow-sm"
+                  ? "border-[#2F4E79] bg-[#1F2A44]/40 shadow-[0_0_0_1px_rgba(47,78,121,0.4)]"
+                  : "border-white/10 bg-white/[0.02] hover:border-white/20"
               }`}
             >
               <div className="flex items-start gap-4">
-                <div
-                  className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 ${
-                    selectedRole === "freelancer"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                <div className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0
+                  ${selectedRole === "freelancer"
+                    ? "bg-[#2F4E79]"
+                    : "bg-white/5"}`}>
+
+                  {/* person_outline */}
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round"
+                      d="M12 12a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 0114 0H5z" />
                   </svg>
                 </div>
+
                 <div className="flex-1">
-                  <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-foreground mb-1">
-                    Soy Freelancer
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Quiero encontrar trabajos, postularme y cobrar de forma segura e instantanea en USDC.
+                  <h3 className="font-semibold text-lg mb-1">Soy Freelancer</h3>
+                  <p className="text-sm text-neutral-400 leading-relaxed">
+                    Encontrar trabajos, postularme y cobrar de forma segura e inmediata en USDC.
                   </p>
                 </div>
+
                 {selectedRole === "freelancer" && (
-                  <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center shrink-0">
-                    <svg className="w-4 h-4 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                    </svg>
-                  </div>
+                  <svg className="w-6 h-6 text-[#9BB8D3]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
                 )}
               </div>
             </button>
@@ -151,11 +149,11 @@ export default function ComenzarPage() {
 
           {/* Wallet status */}
           {isConnected && address && (
-            <div className="flex items-center gap-2 justify-center mb-6 text-sm">
-              <div className="w-2 h-2 rounded-full bg-green-500" />
-              <span className="text-muted-foreground">
-                Wallet conectada:{" "}
-                <span className="font-mono text-foreground">{address.slice(0, 6)}...{address.slice(-4)}</span>
+            <div className="flex items-center gap-2 justify-center mb-6 text-sm text-neutral-400">
+              <div className="w-2 h-2 rounded-full bg-[#5F88B3]" />
+              Wallet conectada:
+              <span className="font-mono text-neutral-200">
+                {address.slice(0, 6)}...{address.slice(-4)}
               </span>
             </div>
           )}
@@ -164,7 +162,9 @@ export default function ComenzarPage() {
           <button
             onClick={handleContinue}
             disabled={!selectedRole || isLoading || isConnecting}
-            className="w-full py-3.5 bg-primary text-primary-foreground rounded-xl text-base font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full py-3.5 rounded-xl font-semibold tracking-wide
+            bg-[#2F4E79] hover:bg-[#1F2A44]
+            transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {isLoading || isConnecting
               ? "Conectando wallet..."
@@ -173,13 +173,13 @@ export default function ComenzarPage() {
               : "Continuar"}
           </button>
 
-          <p className="text-center text-xs text-muted-foreground mt-4">
-            Necesitas la extension{" "}
+          <p className="text-center text-xs text-neutral-500 mt-4">
+            Necesitas la extensión{" "}
             <a
               href="https://www.freighter.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary hover:underline"
+              className="text-[#9BB8D3] hover:underline"
             >
               Freighter
             </a>{" "}

@@ -8,15 +8,12 @@ import Footer from "@/components/landing/footer";
 export default function Home() {
   return (
     <>
-      <Navbar />
       <main>
         <HeroSection />
         <WhyBrujula />
         <HowItWorks />
-
         <CTASection />
       </main>
-      <Footer />
     </>
   );
 }

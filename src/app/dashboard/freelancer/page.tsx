@@ -85,14 +85,13 @@ export default function FreelancerDashboard() {
         setAgreements(data.agreements || []);
       }
 
-      // Fetch userId for notifications
       const userRes = await fetch(`/api/users?stellarAddress=${address}`);
       if (userRes.ok) {
         const userData = await userRes.json();
         if (userData.userId) setUserId(userData.userId);
       }
-    } catch {
-      // Error fetching data
+    } catch (error) {
+      console.error("Error fetching freelancer dashboard data:", error);
     } finally {
       setLoading(false);
     }
@@ -123,7 +122,7 @@ export default function FreelancerDashboard() {
       case "ACTIVE":
         return { label: "Entregar trabajo", href: `/dashboard/freelancer/agreements/${agreement.id}/deliver` };
       case "WORK_DELIVERED":
-        return { label: "Esperando revision...", href: null };
+        return { label: "Esperando revisión...", href: null };
       case "EMPLOYER_APPROVED":
         return { label: "Confirmar y cobrar", href: `/dashboard/freelancer/agreements/${agreement.id}/confirm` };
       case "COMPLETED":
@@ -179,7 +178,7 @@ export default function FreelancerDashboard() {
         </div>
       </header>
 
-      {/* Content */}
+      {/* Main content */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Tabs */}
         <div className="flex gap-1 mb-8 border-b border-border">
@@ -210,30 +209,16 @@ export default function FreelancerDashboard() {
           </div>
         ) : (
           <>
-            {/* Tab: Available Jobs */}
+            {/* Jobs Tab */}
             {activeTab === "jobs" && (
-              <>
-                <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-8 flex items-start gap-3">
-                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
-                    <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Pago garantizado por escrow</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Todos los trabajos listados tienen fondos USDC bloqueados en un smart contract de Stellar.
-                    </p>
-                  </div>
-                </div>
-
+              <div className="space-y-4">
                 {jobs.length === 0 ? (
                   <div className="text-center py-16 bg-card border border-border rounded-xl">
                     <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-foreground mb-2">
-                      No hay trabajos disponibles todavia
+                      No hay trabajos disponibles
                     </h3>
                     <p className="text-muted-foreground text-sm">
-                      Volve pronto para encontrar oportunidades.
+                      Volvé pronto para encontrar oportunidades.
                     </p>
                   </div>
                 ) : (
@@ -253,24 +238,16 @@ export default function FreelancerDashboard() {
                               Abierto
                             </span>
                           </div>
-
-                          <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                            {job.description}
-                          </p>
+                          <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{job.description}</p>
 
                           {skills.length > 0 && (
                             <div className="flex flex-wrap gap-1.5 mb-4">
                               {skills.slice(0, 4).map((skill) => (
-                                <span
-                                  key={skill}
-                                  className="text-xs bg-muted text-muted-foreground px-2.5 py-0.5 rounded-full"
-                                >
+                                <span key={skill} className="text-xs bg-muted text-muted-foreground px-2.5 py-0.5 rounded-full">
                                   {skill}
                                 </span>
                               ))}
-                              {skills.length > 4 && (
-                                <span className="text-xs text-muted-foreground">+{skills.length - 4}</span>
-                              )}
+                              {skills.length > 4 && <span className="text-xs text-muted-foreground">+{skills.length - 4}</span>}
                             </div>
                           )}
 
@@ -280,10 +257,7 @@ export default function FreelancerDashboard() {
                               <span>{job.estimatedDays} dias</span>
                               {job.category && <span className="capitalize">{job.category}</span>}
                             </div>
-                            <Link
-                              href={`/dashboard/freelancer/jobs/${job.id}`}
-                              className="text-sm font-medium text-primary hover:underline"
-                            >
+                            <Link href={`/dashboard/freelancer/jobs/${job.id}`} className="text-sm font-medium text-primary hover:underline">
                               Ver detalles
                             </Link>
                           </div>
@@ -292,104 +266,77 @@ export default function FreelancerDashboard() {
                     })}
                   </div>
                 )}
-              </>
+              </div>
             )}
 
-            {/* Tab: My Applications */}
+            {/* Applications Tab */}
             {activeTab === "applications" && (
-              <>
+              <div className="space-y-3">
                 {applications.length === 0 ? (
                   <div className="text-center py-16 bg-card border border-border rounded-xl">
                     <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-foreground mb-2">
                       No tienes postulaciones
                     </h3>
-                    <p className="text-muted-foreground text-sm mb-4">
-                      Explora los trabajos disponibles y postulate.
-                    </p>
-                    <button
-                      onClick={() => setActiveTab("jobs")}
-                      className="text-sm font-medium text-primary hover:underline"
-                    >
+                    <p className="text-muted-foreground text-sm mb-4">Explora los trabajos disponibles y postulate.</p>
+                    <button onClick={() => setActiveTab("jobs")} className="text-sm font-medium text-primary hover:underline">
                       Ver trabajos disponibles
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    {applications.map((app) => {
-                      const badge = getAppStatusBadge(app.status);
-                      return (
-                        <div
-                          key={app.id}
-                          className="bg-card border border-border rounded-xl p-5 flex items-center justify-between"
-                        >
-                          <div>
-                            <h3 className="font-medium text-foreground">{app.jobTitle}</h3>
-                            <p className="text-sm text-muted-foreground mt-0.5">
-                              {"$"}{app.jobAmount} USDC
-                              {" "}
-                              <span className="text-xs">
-                                Postulado el{" "}
-                                {new Date(app.appliedAt).toLocaleDateString("es")}
-                              </span>
-                            </p>
-                          </div>
-                          <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${badge.className}`}>
-                            {badge.label}
-                          </span>
+                  applications.map((app) => {
+                    const badge = getAppStatusBadge(app.status);
+                    return (
+                      <div key={app.id} className="bg-card border border-border rounded-xl p-5 flex items-center justify-between">
+                        <div>
+                          <h3 className="font-medium text-foreground">{app.jobTitle}</h3>
+                          <p className="text-sm text-muted-foreground mt-0.5">
+                            {"$"}{app.jobAmount} USDC - <span className="text-xs">Postulado el {new Date(app.appliedAt).toLocaleDateString("es")}</span>
+                          </p>
                         </div>
-                      );
-                    })}
-                  </div>
+                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${badge.className}`}>
+                          {badge.label}
+                        </span>
+                      </div>
+                    );
+                  })
                 )}
-              </>
+              </div>
             )}
 
-            {/* Tab: My Agreements */}
+            {/* Agreements Tab */}
             {activeTab === "agreements" && (
-              <>
+              <div className="space-y-3">
                 {agreements.length === 0 ? (
                   <div className="text-center py-16 bg-card border border-border rounded-xl">
                     <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-foreground mb-2">
                       No tienes acuerdos activos
                     </h3>
-                    <p className="text-muted-foreground text-sm">
-                      Cuando un empleador acepte tu postulacion, aparecera aqui.
-                    </p>
+                    <p className="text-muted-foreground text-sm">Cuando un empleador acepte tu postulación, aparecerá aquí.</p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    {agreements.map((agreement) => {
-                      const action = getAgreementAction(agreement);
-                      return (
-                        <div
-                          key={agreement.id}
-                          className="bg-card border border-border rounded-xl p-5 flex items-center justify-between"
-                        >
-                          <div>
-                            <h3 className="font-medium text-foreground">{agreement.jobTitle}</h3>
-                            <p className="text-sm text-muted-foreground mt-0.5">
-                              {"$"}{agreement.jobAmount} USDC
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getAgreementStatusColor(agreement.status)}`}>
-                              {action.label}
-                            </span>
-                            {action.href && (
-                              <Link
-                                href={action.href}
-                                className="text-sm font-medium text-primary hover:underline"
-                              >
-                                Ir
-                              </Link>
-                            )}
-                          </div>
+                  agreements.map((agreement) => {
+                    const action = getAgreementAction(agreement);
+                    return (
+                      <div key={agreement.id} className="bg-card border border-border rounded-xl p-5 flex items-center justify-between">
+                        <div>
+                          <h3 className="font-medium text-foreground">{agreement.jobTitle}</h3>
+                          <p className="text-sm text-muted-foreground mt-0.5">{"$"}{agreement.jobAmount} USDC</p>
                         </div>
-                      );
-                    })}
-                  </div>
+                        <div className="flex items-center gap-3">
+                          <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getAgreementStatusColor(agreement.status)}`}>
+                            {action.label}
+                          </span>
+                          {action.href && (
+                            <Link href={action.href} className="text-sm font-medium text-primary hover:underline">
+                              Ir
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
                 )}
-              </>
+              </div>
             )}
           </>
         )}
