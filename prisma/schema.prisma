@@ -1,12 +1,15 @@
-//3FN
+// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
 
+// Configuración adaptada a Prisma 7 (sin URL dura)
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+//  IDENTIDAD Y PERFIL 
 
 model User {
   id             String   @id @default(cuid())
@@ -16,12 +19,30 @@ model User {
   balance        Float?   @default(0)
   bio            String?
   createdAt      DateTime @default(now())
-  lastSeenAt     DateTime
+  lastSeenAt     DateTime @updatedAt
   metadata       Json?
 
-  jobs                   Job[]         @relation("EmployerJobs")
-  applications           Application[] @relation("FreelancerApplications")
-  agreementsAsFreelancer Agreement[]   @relation("FreelancerAgreements")
+  // Relaciones
+  profile                 Profile?
+  jobs                    Job[]                     @relation("EmployerJobs")
+  applications            Application[]             @relation("FreelancerApplications")
+  agreementsAsFreelancer  Agreement[]               @relation("FreelancerAgreements")
+  notifications           Notification[]            @relation("UserNotifications")
+  notificationPreferences NotificationPreferences?  @relation("UserNotificationPreferences")
+}
+
+model Profile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  avatarUrl   String?
+  title       String?
+  hourlyRate  Float?
+  location    String?
+  websiteUrl  String?
+  socialLinks Json?
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Skill {
@@ -29,6 +50,8 @@ model Skill {
   name  String     @unique
   jobs  JobSkill[]
 }
+
+//  TRANSACCIONAL (3FN) 
 
 model Job {
   id               String    @id @default(cuid())
@@ -56,13 +79,16 @@ model Job {
   skills           JobSkill[]
   applications     Application[]
   agreement        Agreement?
+  transactions     Transaction[]
 }
 
 model JobSkill {
   jobId   String
   skillId String
+
   job     Job   @relation(fields: [jobId], references: [id], onDelete: Cascade)
   skill   Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
   @@id([jobId, skillId])
 }
 
@@ -101,6 +127,7 @@ model Agreement {
   job                   Job             @relation(fields: [jobId], references: [id], onDelete: Restrict)
   freelancer            User            @relation("FreelancerAgreements", fields: [freelancerId], references: [id], onDelete: Restrict)
   deliveryFiles         AgreementFile[]
+  transactions          Transaction[]
 }
 
 model AgreementFile {
@@ -111,4 +138,49 @@ model AgreementFile {
   uploadedAt  DateTime  @default(now())
 
   agreement   Agreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+}
+
+model Transaction {
+  id          String    @id @default(cuid())
+  agreementId String?
+  jobId       String?
+  type        String
+  amount      Float
+  txHash      String?   @unique
+  status      String    @default("PENDING")
+  fromAddress String?
+  toAddress   String?
+  metadata    Json?
+  createdAt   DateTime  @default(now())
+  confirmedAt DateTime?
+
+  agreement   Agreement? @relation(fields: [agreementId], references: [id], onDelete: SetNull)
+  job         Job?       @relation(fields: [jobId], references: [id], onDelete: SetNull)
+}
+
+//  UTILIDADES 
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  actionUrl String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation("UserNotifications", fields: [userId], references: [id], onDelete: Restrict)
+}
+
+model NotificationPreferences {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  contactMethod       String?
+  contactValue        String?
+  notifyOnApplication Boolean  @default(true)
+  notifyOnDelivery    Boolean  @default(true)
+  notifyOnPayment     Boolean  @default(true)
+  
+  user                User     @relation("UserNotificationPreferences", fields: [userId], references: [id], onDelete: Restrict)
 }
