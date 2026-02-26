@@ -16,7 +16,24 @@ export default function DashboardLayout({
 
     if (!wallet || !role) {
       router.push("/comenzar");
+      return;
     }
+
+    const checkProfile = async () => {
+      try {
+        const res = await fetch(`/api/users?stellarAddress=${wallet}`);
+        const data = await res.json();
+
+        // si no existe perfil → lo mandamos a crearlo
+        if (!data.userId) {
+          router.push("/profile");
+        }
+      } catch (error) {
+        console.error("Error checking profile:", error);
+      }
+    };
+
+    checkProfile();
   }, [router]);
 
   return (
