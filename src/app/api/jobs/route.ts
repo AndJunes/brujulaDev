@@ -11,14 +11,21 @@ export async function GET(request: NextRequest) {
     let jobs;
 
     if (employer) {
+      console.log("[v0] Looking up jobs for employer wallet:", employer);
+      const users = await sql`SELECT id FROM "User" WHERE "stellarAddress" = ${employer} LIMIT 1`;
+      console.log("[v0] User lookup result:", JSON.stringify(users));
+
+      if (users.length === 0) {
+        return NextResponse.json({ jobs: [] });
+      }
+
       jobs = await sql`
         SELECT id, title, category, description, amount, "estimatedDays", status, skills, "escrowContractId", "createdAt"
         FROM "Job"
-        WHERE "employerId" = (
-          SELECT id FROM "User" WHERE "stellarAddress" = ${employer} LIMIT 1
-        )
+        WHERE "employerId" = ${users[0].id}
         ORDER BY "createdAt" DESC
       `;
+      console.log("[v0] Jobs found:", jobs.length);
     } else if (status) {
       jobs = await sql`
         SELECT id, title, category, description, amount, "estimatedDays", status, skills, "createdAt"
