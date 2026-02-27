@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import BrujulaLogo from "@/components/landing/brujula-logo";
 import NotificationBell from "@/components/notifications/bell";
@@ -26,7 +25,6 @@ interface Agreement {
 }
 
 export default function EmployerDashboard() {
-  const router = useRouter();
   const [wallet, setWallet] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -35,22 +33,18 @@ export default function EmployerDashboard() {
 
   useEffect(() => {
     const storedWallet = sessionStorage.getItem("brujula_wallet");
-    const storedRole = sessionStorage.getItem("brujula_role");
-
-    if (!storedWallet || storedRole !== "employer") {
-      router.push("/comenzar");
-      return;
-    }
+    if (!storedWallet) return;
 
     setWallet(storedWallet);
     fetchData(storedWallet);
-  }, [router]);
+  }, []);
 
   const fetchData = async (walletAddress: string) => {
     try {
-      const [jobsRes, agreementsRes] = await Promise.all([
+      const [jobsRes, agreementsRes, userRes] = await Promise.all([
         fetch(`/api/jobs?employer=${walletAddress}`),
         fetch(`/api/agreements?employerAddress=${walletAddress}`),
+        fetch(`/api/users?stellarAddress=${walletAddress}`)
       ]);
 
       if (jobsRes.ok) {
@@ -63,14 +57,12 @@ export default function EmployerDashboard() {
         setAgreements(data.agreements || []);
       }
 
-      // Fetch userId for notifications
-      const userRes = await fetch(`/api/users?stellarAddress=${walletAddress}`);
       if (userRes.ok) {
-        const userData = await userRes.json();
-        if (userData.userId) setUserId(userData.userId);
+        const data = await userRes.json();
+        if (data.userId) setUserId(data.userId);
       }
-    } catch {
-      // Error loading
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
     } finally {
       setLoading(false);
     }
@@ -79,7 +71,7 @@ export default function EmployerDashboard() {
   const handleLogout = () => {
     sessionStorage.removeItem("brujula_wallet");
     sessionStorage.removeItem("brujula_role");
-    router.push("/");
+    window.location.href = "/";
   };
 
   const statusLabel = (status: string) => {
@@ -98,13 +90,13 @@ export default function EmployerDashboard() {
   const getJobAction = (job: Job) => {
     switch (job.status) {
       case "OPEN":
-        return { label: "Ver postulaciones", href: `/dashboard/employer/jobs/${job.id}/applications` };
       case "FUNDED":
-        return { label: "Ver postulaciones", href: `/dashboard/employer/jobs/${job.id}/applications` };
       case "ASSIGNED":
         return { label: "Ver postulaciones", href: `/dashboard/employer/jobs/${job.id}/applications` };
       case "IN_REVIEW": {
-        const agreement = agreements.find((a) => a.status === "WORK_DELIVERED" || a.status === "EMPLOYER_APPROVED");
+        const agreement = agreements.find(
+          (a) => a.status === "WORK_DELIVERED" || a.status === "EMPLOYER_APPROVED"
+        );
         return agreement
           ? { label: "Revisar entrega", href: `/dashboard/employer/agreements/${agreement.id}/review` }
           : { label: "Ver", href: null };
@@ -153,7 +145,7 @@ export default function EmployerDashboard() {
         </div>
       </header>
 
-      {/* Content */}
+      {/* Main content */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome + CTA */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
@@ -210,7 +202,7 @@ export default function EmployerDashboard() {
               Todavia no publicaste trabajos
             </h3>
             <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto">
-              Crea tu primer trabajo, deposita USDC en escrow y encontra al freelancer ideal.
+              Crea tu primer trabajo, deposita USDC en escrow y encuentra al freelancer ideal.
             </p>
             <Link
               href="/dashboard/employer/create-job"

@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import BrujulaLogo from "@/components/landing/brujula-logo";
-import NotificationBell from "@/components/notifications/bell";
-import { truncateAddress } from "@/lib/utils";
+import FreelancerHeader from "@/components/dashboard/FreelancerHeader";
+import { getProfile, Profile } from "@/lib/profile";
+import { Footer } from "@creit-tech/stellar-wallets-kit";
 
 interface Job {
   id: string;
@@ -43,10 +43,12 @@ export default function FreelancerDashboard() {
   const router = useRouter();
   const [wallet, setWallet] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("jobs");
   const [jobs, setJobs] = useState<Job[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const [agreements, setAgreements] = useState<Agreement[]>([]);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -59,6 +61,7 @@ export default function FreelancerDashboard() {
     }
 
     setWallet(storedWallet);
+    setProfile(getProfile());
     fetchAllData(storedWallet);
   }, [router]);
 
@@ -72,7 +75,12 @@ export default function FreelancerDashboard() {
 
       if (jobsRes.ok) {
         const data = await jobsRes.json();
-        setJobs(data.jobs || []);
+        const jobList = data.jobs || [];
+        setJobs(jobList);
+
+        if (jobList.length > 0) {
+          setSelectedJob(jobList[0]);
+        }
       }
 
       if (appsRes.ok) {
@@ -85,63 +93,21 @@ export default function FreelancerDashboard() {
         setAgreements(data.agreements || []);
       }
 
-      // Fetch userId for notifications
       const userRes = await fetch(`/api/users?stellarAddress=${address}`);
       if (userRes.ok) {
         const userData = await userRes.json();
         if (userData.userId) setUserId(userData.userId);
       }
-    } catch {
-      // Error fetching data
+    } catch (error) {
+      console.error("Error fetching freelancer dashboard data:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("brujula_wallet");
-    sessionStorage.removeItem("brujula_role");
-    router.push("/");
-  };
-
   const getSkillsArray = (skills: string) => {
     if (!skills) return [];
-    return skills.split(",").map((s: string) => s.trim()).filter(Boolean);
-  };
-
-  const getAppStatusBadge = (status: string) => {
-    const map: Record<string, { label: string; className: string }> = {
-      PENDING: { label: "Pendiente", className: "bg-yellow-100 text-yellow-700" },
-      ACCEPTED: { label: "Aceptada", className: "bg-green-100 text-green-700" },
-      REJECTED: { label: "Rechazada", className: "bg-red-100 text-red-700" },
-    };
-    return map[status] || { label: status, className: "bg-gray-100 text-gray-700" };
-  };
-
-  const getAgreementAction = (agreement: Agreement) => {
-    switch (agreement.status) {
-      case "ACTIVE":
-        return { label: "Entregar trabajo", href: `/dashboard/freelancer/agreements/${agreement.id}/deliver` };
-      case "WORK_DELIVERED":
-        return { label: "Esperando revision...", href: null };
-      case "EMPLOYER_APPROVED":
-        return { label: "Confirmar y cobrar", href: `/dashboard/freelancer/agreements/${agreement.id}/confirm` };
-      case "COMPLETED":
-        return { label: "Completado", href: null };
-      default:
-        return { label: agreement.status, href: null };
-    }
-  };
-
-  const getAgreementStatusColor = (status: string) => {
-    const map: Record<string, string> = {
-      ACTIVE: "bg-blue-100 text-blue-700",
-      WORK_DELIVERED: "bg-yellow-100 text-yellow-700",
-      EMPLOYER_APPROVED: "bg-green-100 text-green-700",
-      COMPLETED: "bg-green-100 text-green-700",
-      DISPUTED: "bg-red-100 text-red-700",
-    };
-    return map[status] || "bg-gray-100 text-gray-700";
+    return skills.split(",").map((s) => s.trim()).filter(Boolean);
   };
 
   const tabs: { id: Tab; label: string; count: number }[] = [
@@ -151,37 +117,27 @@ export default function FreelancerDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Top bar */}
-      <header className="border-b border-border bg-card">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <BrujulaLogo size={28} />
-            <span className="font-[family-name:var(--font-heading)] text-lg font-bold text-foreground">
-              BRUJULA
-            </span>
-          </Link>
+    <div className="min-h-screen bg-background flex flex-col">
+      <FreelancerHeader />
 
-          <div className="flex items-center gap-3">
-            <NotificationBell userId={userId} />
-            {wallet && (
-              <span className="hidden sm:inline text-sm text-muted-foreground font-mono">
-                {truncateAddress(wallet)}
-              </span>
-            )}
-            <button
-              onClick={handleLogout}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Salir
-            </button>
+      <main className="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex-1">
+
+        {/* PROFILE */}
+        {profile && (
+          <div className="mb-8 bg-card rounded-xl p-6">
+            <div className="flex justify-between items-start">
+              <div />
+              <Link
+                href="/profile"
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                Editar perfil
+              </Link>
+            </div>
           </div>
-        </div>
-      </header>
+        )}
 
-      {/* Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Tabs */}
+        {/* TABS */}
         <div className="flex gap-1 mb-8 border-b border-border">
           {tabs.map((tab) => (
             <button
@@ -204,196 +160,87 @@ export default function FreelancerDashboard() {
         </div>
 
         {loading ? (
-          <div className="text-center py-16">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent mb-3" />
-            <p className="text-muted-foreground">Cargando...</p>
-          </div>
+          <p className="text-muted-foreground">Cargando...</p>
         ) : (
-          <>
-            {/* Tab: Available Jobs */}
-            {activeTab === "jobs" && (
-              <>
-                <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-8 flex items-start gap-3">
-                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
-                    <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Pago garantizado por escrow</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Todos los trabajos listados tienen fondos USDC bloqueados en un smart contract de Stellar.
-                    </p>
-                  </div>
-                </div>
+          activeTab === "jobs" && (
+            <div className="grid md:grid-cols-3 gap-6">
 
-                {jobs.length === 0 ? (
-                  <div className="text-center py-16 bg-card border border-border rounded-xl">
-                    <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-foreground mb-2">
-                      No hay trabajos disponibles todavia
+              {/* LISTA (1/3) */}
+              <div className="md:col-span-1 space-y-3">
+                {jobs.map((job) => (
+                  <div
+                    key={job.id}
+                    onClick={() => setSelectedJob(job)}
+                    className={`cursor-pointer border rounded-xl p-4 transition ${
+                      selectedJob?.id === job.id
+                        ? "bg-card border-primary"
+                        : "bg-card border-border hover:border-primary/40"
+                    }`}
+                  >
+                    <h3 className="font-semibold text-sm text-foreground">
+                      {job.title}
                     </h3>
-                    <p className="text-muted-foreground text-sm">
-                      Volve pronto para encontrar oportunidades.
+
+                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                      {job.description}
                     </p>
+
+                    <div className="mt-3 text-xs font-medium text-foreground">
+                      ${job.amount} USDC
+                    </div>
                   </div>
-                ) : (
-                  <div className="grid gap-4 md:grid-cols-2">
-                    {jobs.map((job) => {
-                      const skills = getSkillsArray(job.skills);
-                      return (
-                        <div
-                          key={job.id}
-                          className="bg-card border border-border rounded-xl p-6 hover:shadow-md transition-shadow"
-                        >
-                          <div className="flex items-start justify-between gap-3 mb-3">
-                            <h3 className="font-[family-name:var(--font-heading)] font-semibold text-foreground text-lg leading-snug">
-                              {job.title}
-                            </h3>
-                            <span className="inline-flex px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 shrink-0">
-                              Abierto
-                            </span>
-                          </div>
+                ))}
+              </div>
 
-                          <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                            {job.description}
-                          </p>
+              {/* DETALLE (2/3) */}
+              <div className="md:col-span-2">
+                {selectedJob ? (
+                  <div className="bg-card border border-border rounded-xl p-8 sticky top-24">
+                    <h2 className="text-2xl font-semibold text-foreground mb-4">
+                      {selectedJob.title}
+                    </h2>
 
-                          {skills.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5 mb-4">
-                              {skills.slice(0, 4).map((skill) => (
-                                <span
-                                  key={skill}
-                                  className="text-xs bg-muted text-muted-foreground px-2.5 py-0.5 rounded-full"
-                                >
-                                  {skill}
-                                </span>
-                              ))}
-                              {skills.length > 4 && (
-                                <span className="text-xs text-muted-foreground">+{skills.length - 4}</span>
-                              )}
-                            </div>
-                          )}
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
+                      <span>${selectedJob.amount} USDC</span>
+                      <span>•</span>
+                      <span>{selectedJob.estimatedDays} días estimados</span>
+                    </div>
 
-                          <div className="flex items-center justify-between pt-3 border-t border-border">
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                              <span className="font-semibold text-foreground">{"$"}{job.amount} USDC</span>
-                              <span>{job.estimatedDays} dias</span>
-                              {job.category && <span className="capitalize">{job.category}</span>}
-                            </div>
-                            <Link
-                              href={`/dashboard/freelancer/jobs/${job.id}`}
-                              className="text-sm font-medium text-primary hover:underline"
-                            >
-                              Ver detalles
-                            </Link>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* Tab: My Applications */}
-            {activeTab === "applications" && (
-              <>
-                {applications.length === 0 ? (
-                  <div className="text-center py-16 bg-card border border-border rounded-xl">
-                    <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-foreground mb-2">
-                      No tienes postulaciones
-                    </h3>
-                    <p className="text-muted-foreground text-sm mb-4">
-                      Explora los trabajos disponibles y postulate.
+                    <p className="text-muted-foreground leading-relaxed mb-6">
+                      {selectedJob.description}
                     </p>
-                    <button
-                      onClick={() => setActiveTab("jobs")}
-                      className="text-sm font-medium text-primary hover:underline"
-                    >
-                      Ver trabajos disponibles
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {applications.map((app) => {
-                      const badge = getAppStatusBadge(app.status);
-                      return (
-                        <div
-                          key={app.id}
-                          className="bg-card border border-border rounded-xl p-5 flex items-center justify-between"
-                        >
-                          <div>
-                            <h3 className="font-medium text-foreground">{app.jobTitle}</h3>
-                            <p className="text-sm text-muted-foreground mt-0.5">
-                              {"$"}{app.jobAmount} USDC
-                              {" "}
-                              <span className="text-xs">
-                                Postulado el{" "}
-                                {new Date(app.appliedAt).toLocaleDateString("es")}
-                              </span>
-                            </p>
-                          </div>
-                          <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${badge.className}`}>
-                            {badge.label}
+
+                    {selectedJob.skills && (
+                      <div className="flex flex-wrap gap-2 mb-6">
+                        {getSkillsArray(selectedJob.skills).map((skill, i) => (
+                          <span
+                            key={i}
+                            className="px-3 py-1 text-xs rounded-full bg-muted"
+                          >
+                            {skill}
                           </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </>
-            )}
+                        ))}
+                      </div>
+                    )}
 
-            {/* Tab: My Agreements */}
-            {activeTab === "agreements" && (
-              <>
-                {agreements.length === 0 ? (
-                  <div className="text-center py-16 bg-card border border-border rounded-xl">
-                    <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-foreground mb-2">
-                      No tienes acuerdos activos
-                    </h3>
-                    <p className="text-muted-foreground text-sm">
-                      Cuando un empleador acepte tu postulacion, aparecera aqui.
-                    </p>
+                    <Link
+                      href={`/dashboard/freelancer/jobs/${selectedJob.id}`}
+                      className="inline-block px-6 py-3 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition"
+                    >
+                      Ver detalles completos
+                    </Link>
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    {agreements.map((agreement) => {
-                      const action = getAgreementAction(agreement);
-                      return (
-                        <div
-                          key={agreement.id}
-                          className="bg-card border border-border rounded-xl p-5 flex items-center justify-between"
-                        >
-                          <div>
-                            <h3 className="font-medium text-foreground">{agreement.jobTitle}</h3>
-                            <p className="text-sm text-muted-foreground mt-0.5">
-                              {"$"}{agreement.jobAmount} USDC
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getAgreementStatusColor(agreement.status)}`}>
-                              {action.label}
-                            </span>
-                            {action.href && (
-                              <Link
-                                href={action.href}
-                                className="text-sm font-medium text-primary hover:underline"
-                              >
-                                Ir
-                              </Link>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
+                  <div className="bg-card border border-border rounded-xl p-8 text-muted-foreground">
+                    Selecciona un trabajo para ver los detalles.
                   </div>
                 )}
-              </>
-            )}
-          </>
+              </div>
+            </div>
+          )
         )}
       </main>
+
     </div>
   );
 }
