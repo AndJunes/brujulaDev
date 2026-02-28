@@ -91,7 +91,6 @@ export default function ReviewDeliveryPage() {
     setErrorMsg("");
 
     try {
-      // Step 1: Get unsigned XDR
       const approveRes = await fetch("/api/escrow/approve-milestone", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -106,7 +105,6 @@ export default function ReviewDeliveryPage() {
         throw new Error(approveData.error || "Error al preparar aprobacion");
       }
 
-      // If already approved on-chain, skip signing and just update DB
       if (approveData.alreadyApproved) {
         setStep("sending");
         const sendRes = await fetch("/api/escrow/send-approval", {
@@ -124,7 +122,6 @@ export default function ReviewDeliveryPage() {
         return;
       }
 
-      // Step 2: Sign with wallet
       setStep("signing");
       const signedXdr = await signTransaction(approveData.unsignedXdr, {
         networkPassphrase: "Test SDF Network ; September 2015",
@@ -132,7 +129,6 @@ export default function ReviewDeliveryPage() {
 
       if (!signedXdr) throw new Error("La firma fue cancelada");
 
-      // Step 3: Send signed transaction
       setStep("sending");
       const sendRes = await fetch("/api/escrow/send-approval", {
         method: "POST",
@@ -154,28 +150,28 @@ export default function ReviewDeliveryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent" />
+      <div className="min-h-screen bg-[#040b15] flex items-center justify-center">
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#356EA6] border-r-transparent" />
       </div>
     );
   }
 
   if (step === "success") {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-[#040b15] flex items-center justify-center">
         <div className="max-w-md mx-auto p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-foreground mb-2">Trabajo aprobado</h2>
-          <p className="text-muted-foreground mb-6">
+          <h2 className="text-xl font-bold text-white mb-2">Trabajo aprobado</h2>
+          <p className="text-white/50 mb-6">
             El freelancer puede confirmar para recibir el pago de {"$"}{agreement?.jobAmount} USDC.
           </p>
           <button
             onClick={() => router.push("/dashboard/employer")}
-            className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90"
+            className="px-6 py-3 bg-[#356EA6] hover:bg-[#7FB5E2] text-white rounded-lg font-medium transition cursor-pointer"
           >
             Volver al dashboard
           </button>
@@ -184,18 +180,17 @@ export default function ReviewDeliveryPage() {
     );
   }
 
-  // Signing/sending overlay
   if (step === "approving" || step === "signing" || step === "sending") {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-[#040b15] flex items-center justify-center">
         <div className="max-w-sm mx-auto p-8 text-center">
-          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-primary border-r-transparent mb-4" />
-          <h3 className="text-lg font-semibold text-foreground mb-2">
+          <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[#356EA6] border-r-transparent mb-4" />
+          <h3 className="text-lg font-semibold text-white mb-2">
             {step === "approving" && "Preparando aprobacion..."}
             {step === "signing" && "Firmando con tu wallet..."}
             {step === "sending" && "Enviando a Stellar..."}
           </h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-white/50">
             {step === "signing" && "Revisa y aprueba en tu wallet"}
           </p>
         </div>
@@ -208,12 +203,12 @@ export default function ReviewDeliveryPage() {
     : [];
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
+    <div className="min-h-screen bg-[#040b15]">
+      <header className="border-b border-[#1a3350] bg-[#040b15] backdrop-blur-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center">
           <Link href="/dashboard/employer" className="flex items-center gap-2">
             <BrujulaLogo size={28} />
-            <span className="font-[family-name:var(--font-heading)] text-lg font-bold text-foreground">
+            <span className="text-white tracking-[0.25em] text-sm uppercase font-light">
               BRUJULA
             </span>
           </Link>
@@ -223,7 +218,7 @@ export default function ReviewDeliveryPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link
           href="/dashboard/employer"
-          className="text-sm text-muted-foreground hover:text-foreground mb-6 inline-flex items-center gap-1"
+          className="text-sm text-[#7FB5E2] hover:text-white mb-6 inline-flex items-center gap-1 transition"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -233,25 +228,25 @@ export default function ReviewDeliveryPage() {
 
         {!agreement ? (
           <div className="text-center py-16">
-            <p className="text-muted-foreground">Acuerdo no encontrado</p>
+            <p className="text-white/40">Acuerdo no encontrado</p>
           </div>
         ) : (
-          <div className="bg-card border border-border rounded-xl p-8 mt-4">
-            <h1 className="font-[family-name:var(--font-heading)] text-xl font-bold text-foreground mb-1">
+          <div className="bg-[#12263a] border border-[#1a3350] rounded-2xl p-8 mt-4">
+            <h1 className="text-xl font-semibold tracking-tight text-white mb-1">
               Revisar entrega
             </h1>
-            <p className="text-sm text-muted-foreground mb-8">
+            <p className="text-sm text-white/40 mb-8">
               {agreement.jobTitle} - {"$"}{agreement.jobAmount} USDC - Freelancer: {truncateAddress(agreement.freelancerAddress)}
             </p>
 
             {/* Delivery info */}
-            <div className="mb-6 p-4 bg-muted/30 rounded-lg">
-              <p className="text-xs font-medium text-muted-foreground mb-1">Link al trabajo</p>
+            <div className="mb-6 p-4 bg-[#0a1525] border border-[#1a3350] rounded-lg">
+              <p className="text-xs font-medium text-white/40 mb-1">Link al trabajo</p>
               <a
                 href={agreement.deliveryUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-primary hover:underline break-all"
+                className="text-sm text-[#7FB5E2] hover:text-white transition break-all"
               >
                 {agreement.deliveryUrl}
               </a>
@@ -259,19 +254,19 @@ export default function ReviewDeliveryPage() {
 
             {agreement.deliveryNote && (
               <div className="mb-6">
-                <p className="text-xs font-medium text-muted-foreground mb-1">Nota del freelancer</p>
-                <p className="text-sm text-foreground whitespace-pre-wrap">{agreement.deliveryNote}</p>
+                <p className="text-xs font-medium text-white/40 mb-1">Nota del freelancer</p>
+                <p className="text-sm text-white/70 whitespace-pre-wrap">{agreement.deliveryNote}</p>
               </div>
             )}
 
             {/* Deliverables */}
             {deliverables.length > 0 && (
               <div className="mb-8">
-                <p className="text-xs font-medium text-muted-foreground mb-2">Entregables acordados</p>
+                <p className="text-xs font-medium text-white/40 mb-2">Entregables acordados</p>
                 <ul className="space-y-1.5">
                   {deliverables.map((d, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-foreground">
-                      <svg className="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <li key={i} className="flex items-start gap-2 text-sm text-white/70">
+                      <svg className="w-4 h-4 text-[#7FB5E2] mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       {d}
@@ -283,11 +278,11 @@ export default function ReviewDeliveryPage() {
 
             {/* Error */}
             {step === "error" && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-400">
                 {errorMsg}
                 <button
                   onClick={() => setStep("ready")}
-                  className="ml-2 font-medium hover:underline"
+                  className="ml-2 font-medium hover:text-red-300 transition cursor-pointer"
                 >
                   Reintentar
                 </button>
@@ -296,28 +291,28 @@ export default function ReviewDeliveryPage() {
 
             {/* Feedback form */}
             {step === "feedback" && (
-              <div className="mb-6 p-4 border border-border rounded-lg">
-                <label className="block text-sm font-medium text-foreground mb-2">
+              <div className="mb-6 p-4 border border-[#1a3350] rounded-lg">
+                <label className="block text-sm text-white/40 uppercase tracking-wider mb-2">
                   Que necesita ser ajustado?
                 </label>
                 <textarea
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
                   rows={3}
-                  className="w-full p-3 border border-border rounded-lg bg-background text-foreground text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 mb-3"
+                  className="w-full p-3 border border-[#1a3350] rounded-lg bg-[#0a1525] text-white/80 text-sm resize-none focus:outline-none focus:border-[#7FB5E2] transition mb-3"
                   placeholder="Describe los cambios necesarios..."
                 />
                 <div className="flex gap-2">
                   <button
                     onClick={() => setStep("ready")}
-                    className="px-4 py-2 border border-border rounded-lg text-sm text-muted-foreground"
+                    className="px-4 py-2 border border-[#1a3350] rounded-lg text-sm text-white/40 hover:text-white hover:border-[#7FB5E2] transition cursor-pointer"
                   >
                     Cancelar
                   </button>
                   <button
                     onClick={handleRequestChanges}
                     disabled={!feedback.trim()}
-                    className="px-4 py-2 bg-yellow-500 text-white rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50"
+                    className="px-4 py-2 bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 rounded-lg text-sm font-medium hover:bg-yellow-500/30 disabled:opacity-50 transition cursor-pointer"
                   >
                     Enviar feedback
                   </button>
@@ -327,16 +322,16 @@ export default function ReviewDeliveryPage() {
 
             {/* Action buttons */}
             {step === "ready" && (
-              <div className="flex items-center gap-3 pt-6 border-t border-border">
+              <div className="flex items-center gap-3 pt-6 border-t border-[#1a3350]">
                 <button
                   onClick={() => setStep("feedback")}
-                  className="px-6 py-3 border border-border rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  className="px-6 py-3 border border-[#1a3350] rounded-lg text-sm font-medium text-white/40 hover:text-white hover:border-[#7FB5E2] transition cursor-pointer"
                 >
                   Solicitar cambios
                 </button>
                 <button
                   onClick={handleApprove}
-                  className="px-6 py-3 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+                  className="px-6 py-3 bg-[#356EA6] hover:bg-[#7FB5E2] text-white rounded-lg text-sm font-medium transition cursor-pointer"
                 >
                   Aprobar trabajo
                 </button>

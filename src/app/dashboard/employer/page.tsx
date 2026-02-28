@@ -76,15 +76,15 @@ export default function EmployerDashboard() {
 
   const statusLabel = (status: string) => {
     const map: Record<string, { label: string; color: string }> = {
-      DRAFT: { label: "Borrador", color: "bg-muted text-muted-foreground" },
-      OPEN: { label: "Abierto", color: "bg-blue-100 text-blue-700" },
-      FUNDED: { label: "Fondeado", color: "bg-green-100 text-green-700" },
-      ASSIGNED: { label: "Asignado", color: "bg-purple-100 text-purple-700" },
-      IN_PROGRESS: { label: "En progreso", color: "bg-yellow-100 text-yellow-700" },
-      IN_REVIEW: { label: "En revision", color: "bg-orange-100 text-orange-700" },
-      COMPLETED: { label: "Completado", color: "bg-green-100 text-green-700" },
+      DRAFT: { label: "Borrador", color: "bg-white/10 text-white/60" },
+      OPEN: { label: "Abierto", color: "bg-blue-500/20 text-blue-400" },
+      FUNDED: { label: "Fondeado", color: "bg-green-500/20 text-green-400" },
+      ASSIGNED: { label: "Asignado", color: "bg-purple-500/20 text-purple-400" },
+      IN_PROGRESS: { label: "En progreso", color: "bg-yellow-500/20 text-yellow-400" },
+      IN_REVIEW: { label: "En revision", color: "bg-orange-500/20 text-orange-400" },
+      COMPLETED: { label: "Completado", color: "bg-green-500/20 text-green-400" },
     };
-    return map[status] || { label: status, color: "bg-muted text-muted-foreground" };
+    return map[status] || { label: status, color: "bg-white/10 text-white/60" };
   };
 
   const getJobAction = (job: Job) => {
@@ -108,36 +108,36 @@ export default function EmployerDashboard() {
 
   const getAgreementStatusLabel = (status: string) => {
     const map: Record<string, { label: string; color: string }> = {
-      ACTIVE: { label: "Activo", color: "bg-blue-100 text-blue-700" },
-      WORK_DELIVERED: { label: "Entrega recibida", color: "bg-orange-100 text-orange-700" },
-      EMPLOYER_APPROVED: { label: "Aprobado", color: "bg-green-100 text-green-700" },
-      COMPLETED: { label: "Completado", color: "bg-green-100 text-green-700" },
+      ACTIVE: { label: "Activo", color: "bg-blue-500/20 text-blue-400" },
+      WORK_DELIVERED: { label: "Entrega recibida", color: "bg-orange-500/20 text-orange-400" },
+      EMPLOYER_APPROVED: { label: "Aprobado", color: "bg-green-500/20 text-green-400" },
+      COMPLETED: { label: "Completado", color: "bg-green-500/20 text-green-400" },
     };
-    return map[status] || { label: status, color: "bg-muted text-muted-foreground" };
+    return map[status] || { label: status, color: "bg-white/10 text-white/60" };
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#040b15]">
       {/* Top bar */}
-      <header className="border-b border-border bg-card">
+      <header className="border-b border-[#1a3350] bg-[#040b15] backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <BrujulaLogo size={28} />
-            <span className="font-[family-name:var(--font-heading)] text-lg font-bold text-foreground">
+            <span className="text-white tracking-[0.25em] text-sm uppercase font-light">
               BRUJULA
             </span>
           </Link>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <NotificationBell userId={userId} />
             {wallet && (
-              <span className="hidden sm:inline text-sm text-muted-foreground font-mono">
+              <span className="hidden sm:inline text-xs text-white/40 font-mono">
                 {truncateAddress(wallet)}
               </span>
             )}
             <button
               onClick={handleLogout}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="text-sm text-white/50 hover:text-white transition cursor-pointer"
             >
               Salir
             </button>
@@ -150,16 +150,16 @@ export default function EmployerDashboard() {
         {/* Welcome + CTA */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
-            <h1 className="font-[family-name:var(--font-heading)] text-2xl font-bold text-foreground">
+            <h1 className="text-2xl font-semibold tracking-tight text-white">
               Panel de Empleador
             </h1>
-            <p className="text-muted-foreground text-sm mt-1">
+            <p className="text-white/40 text-sm mt-1">
               Publica trabajos y gestiona tus contratos escrow
             </p>
           </div>
           <Link
             href="/dashboard/employer/create-job"
-            className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity"
+            className="inline-flex items-center justify-center gap-2 bg-[#356EA6] hover:bg-[#7FB5E2] text-white px-6 py-3 rounded-lg text-sm font-semibold transition"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -176,9 +176,9 @@ export default function EmployerDashboard() {
             { label: "Asignados", value: jobs.filter((j) => j.status === "ASSIGNED" || j.status === "IN_REVIEW").length },
             { label: "Completados", value: jobs.filter((j) => j.status === "COMPLETED").length },
           ].map((stat) => (
-            <div key={stat.label} className="bg-card border border-border rounded-xl p-4">
-              <p className="text-sm text-muted-foreground">{stat.label}</p>
-              <p className="font-[family-name:var(--font-heading)] text-2xl font-bold text-foreground mt-1">
+            <div key={stat.label} className="bg-[#12263a] border border-[#1a3350] rounded-xl p-4">
+              <p className="text-sm text-white/40">{stat.label}</p>
+              <p className="text-2xl font-bold text-white mt-1">
                 {stat.value}
               </p>
             </div>
@@ -188,32 +188,32 @@ export default function EmployerDashboard() {
         {/* Jobs list */}
         {loading ? (
           <div className="text-center py-16">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent mb-3" />
-            <p className="text-muted-foreground">Cargando...</p>
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#356EA6] border-r-transparent mb-3" />
+            <p className="text-white/40">Cargando...</p>
           </div>
         ) : jobs.length === 0 ? (
-          <div className="text-center py-16 bg-card border border-border rounded-xl">
-            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <div className="text-center py-16 bg-[#12263a] border border-[#1a3350] rounded-xl">
+            <div className="w-16 h-16 bg-[#0a1525] rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
               </svg>
             </div>
-            <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-foreground mb-2">
+            <h3 className="text-lg font-semibold text-white mb-2">
               Todavia no publicaste trabajos
             </h3>
-            <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto">
+            <p className="text-white/40 text-sm mb-6 max-w-sm mx-auto">
               Crea tu primer trabajo, deposita USDC en escrow y encuentra al freelancer ideal.
             </p>
             <Link
               href="/dashboard/employer/create-job"
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity"
+              className="inline-flex items-center gap-2 bg-[#356EA6] hover:bg-[#7FB5E2] text-white px-6 py-3 rounded-lg text-sm font-semibold transition"
             >
               Publicar mi primer trabajo
             </Link>
           </div>
         ) : (
           <>
-            <h2 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-foreground mb-3">
+            <h2 className="text-lg font-semibold text-white mb-3">
               Tus trabajos
             </h2>
             <div className="space-y-3 mb-10">
@@ -223,11 +223,11 @@ export default function EmployerDashboard() {
                 return (
                   <div
                     key={job.id}
-                    className="bg-card border border-border rounded-xl p-5 flex flex-col sm:flex-row sm:items-center gap-4"
+                    className="bg-[#12263a] border border-[#1a3350] rounded-xl p-5 flex flex-col sm:flex-row sm:items-center gap-4"
                   >
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-foreground truncate">{job.title}</h3>
-                      <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
+                      <h3 className="font-semibold text-white truncate">{job.title}</h3>
+                      <div className="flex items-center gap-3 mt-1 text-sm text-white/40">
                         {job.category && <span className="capitalize">{job.category}</span>}
                         <span>{"$"}{job.amount} USDC</span>
                       </div>
@@ -239,7 +239,7 @@ export default function EmployerDashboard() {
                       {action.href && (
                         <Link
                           href={action.href}
-                          className="text-sm font-medium text-primary hover:underline"
+                          className="text-sm font-medium text-[#7FB5E2] hover:text-white transition"
                         >
                           {action.label}
                         </Link>
@@ -253,7 +253,7 @@ export default function EmployerDashboard() {
             {/* Agreements section */}
             {agreements.length > 0 && (
               <>
-                <h2 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-foreground mb-3">
+                <h2 className="text-lg font-semibold text-white mb-3">
                   Acuerdos activos
                 </h2>
                 <div className="space-y-3">
@@ -265,11 +265,11 @@ export default function EmployerDashboard() {
                     return (
                       <div
                         key={agreement.id}
-                        className="bg-card border border-border rounded-xl p-5 flex items-center justify-between"
+                        className="bg-[#12263a] border border-[#1a3350] rounded-xl p-5 flex items-center justify-between"
                       >
                         <div>
-                          <h3 className="font-medium text-foreground">{agreement.jobTitle}</h3>
-                          <p className="text-sm text-muted-foreground mt-0.5">
+                          <h3 className="font-medium text-white">{agreement.jobTitle}</h3>
+                          <p className="text-sm text-white/40 mt-0.5">
                             {"$"}{agreement.jobAmount} USDC - Freelancer: {truncateAddress(agreement.freelancerAddress)}
                           </p>
                         </div>
@@ -280,7 +280,7 @@ export default function EmployerDashboard() {
                           {reviewHref && (
                             <Link
                               href={reviewHref}
-                              className="text-sm font-medium text-primary hover:underline"
+                              className="text-sm font-medium text-[#7FB5E2] hover:text-white transition"
                             >
                               Revisar
                             </Link>

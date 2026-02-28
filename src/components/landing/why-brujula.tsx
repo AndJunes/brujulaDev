@@ -74,7 +74,7 @@ export default function WhyBrujula() {
               "
             >
               {/* NUMBER */}
-              <div className="text-5xl font-bold text-[#5F88B3] mb-8 tracking-tight">
+              <div className="text-5xl font-bold text-[#446f98] mb-8 tracking-tight">
                 {f.number}
               </div>
 

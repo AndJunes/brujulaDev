@@ -3,11 +3,11 @@ import Image from "next/image";
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-screen pt-32 pb-32 overflow-hidden bg-black text-white">
+    <section className="relative min-h-screen pt-32 pb-32 overflow-hidden bg-[#040b15] text-white">
 
       {/* Fondos decorativos (no bloquean clicks) */}
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_60%)]" />
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-black/40 to-black" />
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-[#040b15]/40 to-[#040b15]" />
 
       {/* CONTENIDO */}
       <div className="relative z-10 max-w-[90rem] mx-auto px-6 lg:px-12">

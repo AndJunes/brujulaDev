@@ -9,7 +9,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/95 border-b border-white/10 backdrop-blur-sm">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#040b15] border-b border-[#1a3350] backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
 
@@ -88,7 +88,7 @@ export default function Navbar() {
               Modelo
             </a>
 
-            <div className="pt-4 border-t border-white/10">
+            <div className="pt-4 border-t border-[#1a3350]">
               <Link
                 href="/comenzar"
                 className="block text-center border border-white/20 py-3 uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300"

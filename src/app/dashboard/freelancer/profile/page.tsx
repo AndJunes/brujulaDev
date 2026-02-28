@@ -34,8 +34,8 @@ export default function ProfileViewPage() {
   return (
     <>
       <FreelancerHeader/>
-      <div className="min-h-screen bg-[#0B0F14] flex justify-center px-6 py-20">
-        <div className="w-full max-w-2xl bg-[#121821] border border-white/6 rounded-2xl p-12">
+      <div className="min-h-screen bg-[#040b15] flex justify-center px-6 py-20">
+        <div className="w-full max-w-2xl bg-[#12263a] border border-white/6 rounded-2xl p-12">
 
           {/* HEADER */}
           <div className="flex justify-between items-start mb-12">
@@ -48,7 +48,7 @@ export default function ProfileViewPage() {
                   className="w-20 h-20 rounded-full object-cover border border-white/10"
                 />
               ) : (
-                <div className="w-20 h-20 rounded-full bg-[#5F88B3]/10 flex items-center justify-center text-2xl font-semibold text-[#5F88B3]">
+                <div className="w-20 h-20 rounded-full bg-[#7FB5E2]/10 flex items-center justify-center text-2xl font-semibold text-[#7FB5E2]">
                   {profile.name.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -66,7 +66,7 @@ export default function ProfileViewPage() {
                   {profile.country}
                 </p>
 
-                <p className="text-sm font-medium text-[#5F88B3] mt-2">
+                <p className="text-sm font-medium text-[#7FB5E2] mt-2">
                   {profile.occupation}
                 </p>
               </div>
@@ -74,7 +74,7 @@ export default function ProfileViewPage() {
 
             <Link
               href="/dashboard/freelancer/profile/edit"
-              className="text-sm text-[#5F88B3] font-medium tracking-wide hover:opacity-70 transition"
+              className="text-sm text-[#7FB5E2] font-medium tracking-wide hover:opacity-70 transition"
             >
               Editar
             </Link>
@@ -104,7 +104,7 @@ export default function ProfileViewPage() {
                 {profile.skills.map((skill, i) => (
                   <span
                     key={i}
-                    className="px-3 py-1.5 text-sm rounded-md bg-[#5F88B3]/10 text-[#5F88B3]"
+                    className="px-3 py-1.5 text-sm rounded-md bg-[#7FB5E2]/10 text-[#7FB5E2]"
                   >
                     {skill}
                   </span>
@@ -185,7 +185,7 @@ export default function ProfileViewPage() {
                   </p>
                 </div>
 
-                <span className="text-sm text-[#5F88B3] font-medium">
+                <span className="text-sm text-[#7FB5E2] font-medium">
                   Cargado
                 </span>
               </section>
