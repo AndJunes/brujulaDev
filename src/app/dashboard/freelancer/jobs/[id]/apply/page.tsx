@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import BrujulaLogo from "@/components/landing/brujula-logo";
+import FreelancerHeader from "@/components/dashboard/FreelancerHeader";
 
 export default function ApplyToJobPage() {
   const router = useRouter();
@@ -86,109 +86,102 @@ export default function ApplyToJobPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent" />
+      <div className="min-h-screen bg-[#040b15] flex items-center justify-center">
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#356EA6] border-r-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/dashboard/freelancer" className="flex items-center gap-2">
-            <BrujulaLogo size={28} />
-            <span className="font-[family-name:var(--font-heading)] text-lg font-bold text-foreground">
-              BRUJULA
-            </span>
+    <>
+      <FreelancerHeader />
+      <div className="min-h-screen bg-[#040b15] text-white/80 flex justify-center px-6 py-16">
+        <div className="w-full max-w-3xl pt-10">
+
+          <Link
+            href={`/dashboard/freelancer/jobs/${jobId}`}
+            className="text-sm text-[#7FB5E2] hover:text-white mb-6 inline-flex items-center gap-1 transition"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Volver al trabajo
           </Link>
-        </div>
-      </header>
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Link
-          href={`/dashboard/freelancer/jobs/${jobId}`}
-          className="text-sm text-muted-foreground hover:text-foreground mb-6 inline-flex items-center gap-1"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-          Volver al trabajo
-        </Link>
+          <div className="bg-[#12263a] border border-[#1a3350] rounded-2xl p-10 mt-4">
+            <h1 className="text-2xl font-semibold tracking-tight text-white mb-1">
+              Postularme
+            </h1>
+            {jobTitle && (
+              <p className="text-sm text-white/40 mb-8">Para: {jobTitle}</p>
+            )}
 
-        <div className="bg-card border border-border rounded-xl p-8 mt-4">
-          <h1 className="font-[family-name:var(--font-heading)] text-xl font-bold text-foreground mb-1">
-            Postularme
-          </h1>
-          {jobTitle && (
-            <p className="text-sm text-muted-foreground mb-8">Para: {jobTitle}</p>
-          )}
-
-          {/* Cover letter */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Por que eres el indicado para este trabajo? *
-            </label>
-            <textarea
-              value={coverLetter}
-              onChange={(e) => setCoverLetter(e.target.value)}
-              rows={5}
-              className="w-full p-3 border border-border rounded-lg bg-background text-foreground text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
-              placeholder="Describe tu experiencia relevante, proyectos similares, y por que deberias ser seleccionado..."
-            />
-          </div>
-
-          {/* Portfolio URL */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Portfolio o trabajos previos (opcional)
-            </label>
-            <input
-              type="url"
-              value={portfolioUrl}
-              onChange={(e) => setPortfolioUrl(e.target.value)}
-              className="w-full p-3 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-              placeholder="https://tu-portfolio.com"
-            />
-          </div>
-
-          {/* Proposed delivery date */}
-          <div className="mb-8">
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Cuando puedes entregar? *
-            </label>
-            <input
-              type="date"
-              value={proposedDeliveryDate}
-              onChange={(e) => setProposedDeliveryDate(e.target.value)}
-              min={new Date().toISOString().split("T")[0]}
-              className="w-full p-3 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-            />
-          </div>
-
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-              {error}
+            {/* Cover letter */}
+            <div className="mb-6">
+              <label className="block text-sm text-white/40 uppercase tracking-wider mb-2">
+                Por que eres el indicado para este trabajo? *
+              </label>
+              <textarea
+                value={coverLetter}
+                onChange={(e) => setCoverLetter(e.target.value)}
+                rows={5}
+                className="w-full p-3 border border-[#1a3350] rounded-lg bg-[#0a1525] text-white/80 text-sm resize-none focus:outline-none focus:border-[#7FB5E2] transition"
+                placeholder="Describe tu experiencia relevante, proyectos similares, y por que deberias ser seleccionado..."
+              />
             </div>
-          )}
 
-          <div className="flex items-center gap-3">
-            <Link
-              href={`/dashboard/freelancer/jobs/${jobId}`}
-              className="px-6 py-3 border border-border rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Cancelar
-            </Link>
-            <button
-              onClick={handleSubmit}
-              disabled={submitting || !coverLetter.trim() || !proposedDeliveryDate}
-              className="px-6 py-3 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
-            >
-              {submitting ? "Enviando..." : "Enviar postulacion"}
-            </button>
+            {/* Portfolio URL */}
+            <div className="mb-6">
+              <label className="block text-sm text-white/40 uppercase tracking-wider mb-2">
+                Portfolio o trabajos previos (opcional)
+              </label>
+              <input
+                type="url"
+                value={portfolioUrl}
+                onChange={(e) => setPortfolioUrl(e.target.value)}
+                className="w-full p-3 border border-[#1a3350] rounded-lg bg-[#0a1525] text-white/80 text-sm focus:outline-none focus:border-[#7FB5E2] transition"
+                placeholder="https://tu-portfolio.com"
+              />
+            </div>
+
+            {/* Proposed delivery date */}
+            <div className="mb-8">
+              <label className="block text-sm text-white/40 uppercase tracking-wider mb-2">
+                Cuando puedes entregar? *
+              </label>
+              <input
+                type="date"
+                value={proposedDeliveryDate}
+                onChange={(e) => setProposedDeliveryDate(e.target.value)}
+                min={new Date().toISOString().split("T")[0]}
+                className="w-full p-3 border border-[#1a3350] rounded-lg bg-[#0a1525] text-white/80 text-sm focus:outline-none focus:border-[#7FB5E2] transition"
+              />
+            </div>
+
+            {error && (
+              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-400">
+                {error}
+              </div>
+            )}
+
+            <div className="flex items-center gap-3">
+              <Link
+                href={`/dashboard/freelancer/jobs/${jobId}`}
+                className="px-6 py-3 border border-[#1a3350] rounded-lg text-sm font-medium text-white/40 hover:text-white hover:border-[#7FB5E2] transition"
+              >
+                Cancelar
+              </Link>
+              <button
+                onClick={handleSubmit}
+                disabled={submitting || !coverLetter.trim() || !proposedDeliveryDate}
+                className="px-6 py-3 bg-[#356EA6] hover:bg-[#7FB5E2] text-white rounded-lg text-sm font-medium disabled:opacity-50 transition cursor-pointer"
+              >
+                {submitting ? "Enviando..." : "Enviar postulacion"}
+              </button>
+            </div>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </>
   );
 }

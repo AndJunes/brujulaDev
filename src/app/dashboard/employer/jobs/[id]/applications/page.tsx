@@ -47,7 +47,6 @@ export default function EmployerApplicationsPage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Accept flow state
   const [acceptingId, setAcceptingId] = useState<string | null>(null);
   const [acceptStep, setAcceptStep] = useState<AcceptStep>("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -104,7 +103,6 @@ export default function EmployerApplicationsPage() {
   const handleAccept = async (app: Application) => {
     if (!job || !address) return;
 
-    // Ensure wallet is connected
     let walletAddress: string | null | undefined = address;
     if (!isConnected || !walletAddress) {
       walletAddress = await connect();
@@ -120,8 +118,6 @@ export default function EmployerApplicationsPage() {
     setErrorMsg("");
 
     try {
-      // === STEP 1: Deploy escrow with correct roles ===
-      // Platform roles (platformAddress, releaseSigner, disputeResolver) are set server-side
       const deployRes = await fetch("/api/escrow/deploy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -145,25 +141,18 @@ export default function EmployerApplicationsPage() {
         throw new Error(deployData.error || "Error al desplegar el escrow");
       }
 
-      // === STEP 2: Sign deploy with Freighter ===
       setAcceptStep("signing-deploy");
       const signedDeployXdr = await signTransaction(deployData.unsignedXdr, {
         networkPassphrase: "Test SDF Network ; September 2015",
       });
 
-      if (!signedDeployXdr) {
-        throw new Error("La firma del deploy fue cancelada");
-      }
+      if (!signedDeployXdr) throw new Error("La firma del deploy fue cancelada");
 
-      // === STEP 3: Send deploy transaction ===
       setAcceptStep("sending-deploy");
       const sendDeployRes = await fetch("/api/escrow/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          signedXdr: signedDeployXdr,
-          jobId,
-        }),
+        body: JSON.stringify({ signedXdr: signedDeployXdr, jobId }),
       });
 
       const sendDeployData = await sendDeployRes.json();
@@ -173,16 +162,11 @@ export default function EmployerApplicationsPage() {
 
       const contractId = sendDeployData.contractId;
 
-      // === STEP 4: Fund escrow ===
       setAcceptStep("funding");
       const fundRes = await fetch("/api/escrow/fund", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contractId,
-          amount: job.amount || 0,
-          signer: walletAddress,
-        }),
+        body: JSON.stringify({ contractId, amount: job.amount || 0, signer: walletAddress }),
       });
 
       const fundData = await fundRes.json();
@@ -190,25 +174,18 @@ export default function EmployerApplicationsPage() {
         throw new Error(fundData.error || "Error al preparar el fondeo");
       }
 
-      // === STEP 5: Sign fund with Freighter ===
       setAcceptStep("signing-fund");
       const signedFundXdr = await signTransaction(fundData.unsignedXdr, {
         networkPassphrase: "Test SDF Network ; September 2015",
       });
 
-      if (!signedFundXdr) {
-        throw new Error("La firma del fondeo fue cancelada");
-      }
+      if (!signedFundXdr) throw new Error("La firma del fondeo fue cancelada");
 
-      // === STEP 6: Send fund transaction ===
       setAcceptStep("sending-fund");
       const sendFundRes = await fetch("/api/escrow/send-fund", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          signedXdr: signedFundXdr,
-          jobId,
-        }),
+        body: JSON.stringify({ signedXdr: signedFundXdr, jobId }),
       });
 
       const sendFundData = await sendFundRes.json();
@@ -216,7 +193,6 @@ export default function EmployerApplicationsPage() {
         throw new Error(sendFundData.error || "Error al enviar el fondeo");
       }
 
-      // === STEP 7: Finalize accept (server-side: create agreement + update DB) ===
       setAcceptStep("finalizing");
       const finalizeRes = await fetch("/api/escrow/finalize-accept", {
         method: "POST",
@@ -243,29 +219,28 @@ export default function EmployerApplicationsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent" />
+      <div className="min-h-screen bg-[#040b15] flex items-center justify-center">
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#356EA6] border-r-transparent" />
       </div>
     );
   }
 
-  // Success state
   if (acceptStep === "success") {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-[#040b15] flex items-center justify-center">
         <div className="max-w-md mx-auto p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-foreground mb-2">Freelancer asignado</h2>
-          <p className="text-muted-foreground mb-6">
+          <h2 className="text-xl font-bold text-white mb-2">Freelancer asignado</h2>
+          <p className="text-white/50 mb-6">
             El escrow fue creado y fondeado en la blockchain. El freelancer ya puede empezar a trabajar.
           </p>
           <button
             onClick={() => router.push("/dashboard/employer")}
-            className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90"
+            className="px-6 py-3 bg-[#356EA6] hover:bg-[#7FB5E2] text-white rounded-lg font-medium transition cursor-pointer"
           >
             Volver al dashboard
           </button>
@@ -276,7 +251,6 @@ export default function EmployerApplicationsPage() {
 
   const pendingApps = applications.filter((a) => a.status === "PENDING");
 
-  // Step messages for the processing overlay
   const stepMessages: Record<string, { title: string; desc: string }> = {
     "deploying": { title: "Creando contrato escrow...", desc: "Conectando con Trustless Work" },
     "signing-deploy": { title: "Firma 1/2: Crear escrow", desc: "Revisa y aprueba en tu wallet" },
@@ -290,12 +264,12 @@ export default function EmployerApplicationsPage() {
   const isProcessing = acceptStep !== "idle" && acceptStep !== "error";
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
+    <div className="min-h-screen bg-[#040b15]">
+      <header className="border-b border-[#1a3350] bg-[#040b15] backdrop-blur-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/dashboard/employer" className="flex items-center gap-2">
             <BrujulaLogo size={28} />
-            <span className="font-[family-name:var(--font-heading)] text-lg font-bold text-foreground">
+            <span className="text-white tracking-[0.25em] text-sm uppercase font-light">
               BRUJULA
             </span>
           </Link>
@@ -305,7 +279,7 @@ export default function EmployerApplicationsPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link
           href="/dashboard/employer"
-          className="text-sm text-muted-foreground hover:text-foreground mb-6 inline-flex items-center gap-1"
+          className="text-sm text-[#7FB5E2] hover:text-white mb-6 inline-flex items-center gap-1 transition"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -314,11 +288,11 @@ export default function EmployerApplicationsPage() {
         </Link>
 
         <div className="mt-4 mb-8">
-          <h1 className="font-[family-name:var(--font-heading)] text-2xl font-bold text-foreground">
+          <h1 className="text-2xl font-semibold tracking-tight text-white">
             Postulaciones
           </h1>
           {job && (
-            <p className="text-muted-foreground text-sm mt-1">
+            <p className="text-white/40 text-sm mt-1">
               Para: {job.title} - {"$"}{job.amount} USDC
             </p>
           )}
@@ -326,13 +300,13 @@ export default function EmployerApplicationsPage() {
 
         {/* Processing overlay */}
         {isProcessing && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-card rounded-xl p-8 max-w-sm text-center">
-              <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-primary border-r-transparent mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+            <div className="bg-[#12263a] border border-[#1a3350] rounded-xl p-8 max-w-sm text-center">
+              <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[#356EA6] border-r-transparent mb-4" />
+              <h3 className="text-lg font-semibold text-white mb-2">
                 {stepMessages[acceptStep]?.title || "Procesando..."}
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-white/50">
                 {stepMessages[acceptStep]?.desc || ""}
               </p>
             </div>
@@ -341,15 +315,15 @@ export default function EmployerApplicationsPage() {
 
         {/* Error message */}
         {acceptStep === "error" && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
-            <p className="text-sm text-red-700 mb-2">{errorMsg}</p>
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <p className="text-sm text-red-400 mb-2">{errorMsg}</p>
             <button
               onClick={() => {
                 setAcceptStep("idle");
                 setAcceptingId(null);
                 setErrorMsg("");
               }}
-              className="text-sm font-medium text-red-700 hover:underline"
+              className="text-sm font-medium text-red-400 hover:text-red-300 transition cursor-pointer"
             >
               Cerrar
             </button>
@@ -357,11 +331,11 @@ export default function EmployerApplicationsPage() {
         )}
 
         {pendingApps.length === 0 ? (
-          <div className="text-center py-16 bg-card border border-border rounded-xl">
-            <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-foreground mb-2">
+          <div className="text-center py-16 bg-[#12263a] border border-[#1a3350] rounded-xl">
+            <h3 className="text-lg font-semibold text-white mb-2">
               No hay postulaciones pendientes
             </h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-white/40 text-sm">
               Los freelancers aun no se han postulado a este trabajo.
             </p>
           </div>
@@ -370,56 +344,53 @@ export default function EmployerApplicationsPage() {
             {pendingApps.map((app) => (
               <div
                 key={app.id}
-                className="bg-card border border-border rounded-xl p-6"
+                className="bg-[#12263a] border border-[#1a3350] rounded-xl p-6"
               >
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div>
-                    <p className="font-medium text-foreground font-mono text-sm">
+                    <p className="font-medium text-white font-mono text-sm">
                       {truncateAddress(app.freelancerAddress)}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                    <p className="text-xs text-white/40 mt-0.5">
                       Postulado el {new Date(app.appliedAt).toLocaleDateString("es")}
                     </p>
                   </div>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-white/40">
                     Entrega: {new Date(app.proposedDeliveryDate).toLocaleDateString("es")}
                   </p>
                 </div>
 
-                {/* Cover letter */}
                 <div className="mb-4">
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Cover letter</p>
-                  <p className="text-sm text-foreground whitespace-pre-wrap">{app.coverLetter}</p>
+                  <p className="text-xs font-medium text-white/40 mb-1">Cover letter</p>
+                  <p className="text-sm text-white/70 whitespace-pre-wrap">{app.coverLetter}</p>
                 </div>
 
-                {/* Portfolio */}
                 {app.portfolioUrl && (
                   <div className="mb-4">
-                    <p className="text-xs font-medium text-muted-foreground mb-1">Portfolio</p>
+                    <p className="text-xs font-medium text-white/40 mb-1">Portfolio</p>
                     <a
                       href={app.portfolioUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-primary hover:underline"
+                      className="text-sm text-[#7FB5E2] hover:text-white transition"
                     >
                       {app.portfolioUrl}
                     </a>
                   </div>
                 )}
 
-                {/* Actions */}
-                <div className="flex items-center gap-3 pt-4 border-t border-border">
+                <div className="flex items-center gap-3 pt-4 border-t border-[#1a3350]">
                   <button
                     onClick={() => handleReject(app.id)}
                     disabled={acceptingId !== null}
-                    className="px-4 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:text-foreground disabled:opacity-50 transition-colors"
+                    className="px-4 py-2 border border-[#1a3350] rounded-lg text-sm text-white/40 hover:text-white hover:border-[#7FB5E2] disabled:opacity-50 transition cursor-pointer"
                   >
                     Rechazar
                   </button>
                   <button
                     onClick={() => handleAccept(app)}
                     disabled={acceptingId !== null}
-                    className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
+                    className="px-4 py-2 bg-[#356EA6] hover:bg-[#7FB5E2] text-white rounded-lg text-sm font-medium disabled:opacity-50 transition cursor-pointer"
                   >
                     Aceptar y asignar
                   </button>
