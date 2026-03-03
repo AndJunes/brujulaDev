@@ -11,6 +11,7 @@ Marketplace freelance descentralizado construido sobre la red Stellar. Los emple
 | Blockchain | Stellar Network (Testnet), USDC on Stellar |
 | Smart Contracts | Trustless Work (escrow single-release) |
 | Wallet | Freighter Wallet (`@stellar/freighter-api`) |
+| Proveedor Wallet | Accesly (`accesly`) |
 | Formularios | React Hook Form |
 | Deploy | Vercel |
 
