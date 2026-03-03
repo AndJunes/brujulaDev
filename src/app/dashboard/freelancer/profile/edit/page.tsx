@@ -105,17 +105,17 @@ export default function EditProfilePage() {
   return (
     <>
       <FreelancerHeader />
-      <div className="min-h-screen bg-[#0b0f14] text-gray-200 flex justify-center px-6 py-16">
+      <div className="min-h-screen bg-[#040b15] text-white/80 flex justify-center px-6 py-16">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-3xl bg-[#121821] border border-[#1f2a37] rounded-2xl shadow-2xl p-10 space-y-10"
+          className="w-full max-w-3xl bg-[#12263a] border border-[#1a3350] rounded-2xl shadow-2xl p-10 space-y-10"
         >
           {/* HEADER */}
-          <div className="border-b border-[#1f2a37] pb-6">
+          <div className="border-b border-[#1a3350] pb-6">
             <h1 className="text-3xl font-semibold tracking-tight">
               Perfil Profesional
             </h1>
-            <p className="text-sm text-gray-400 mt-2">
+            <p className="text-sm text-white/40 mt-2">
               Este perfil representa tu identidad profesional dentro de la red.
             </p>
           </div>
@@ -135,13 +135,13 @@ export default function EditProfilePage() {
               {form.avatar ? (
                 <img
                   src={form.avatar}
-                  className="w-20 h-20 rounded-full object-cover border border-[#243041]"
+                  className="w-20 h-20 rounded-full object-cover border border-[#1a3350]"
                 />
               ) : (
-                <div className="w-20 h-20 rounded-full bg-[#1c2532]" />
+                <div className="w-20 h-20 rounded-full bg-[#0a1525]" />
               )}
 
-              <div className="border border-dashed border-[#2b3a4d] px-6 py-3 rounded-lg text-sm text-gray-400 group-hover:border-blue-500 group-hover:text-blue-400 transition">
+              <div className="border border-dashed border-[#1a3350] px-6 py-3 rounded-lg text-sm text-white/40 group-hover:border-[#7FB5E2] group-hover:text-[#7FB5E2] transition">
                 Click para subir imagen
               </div>
             </label>
@@ -170,7 +170,7 @@ export default function EditProfilePage() {
               name="bio"
               value={form.bio}
               onChange={handleChange}
-              className="w-full bg-[#0f141c] border border-[#1f2a37] rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 transition"
+              className="w-full bg-[#0a1525] border border-[#1a3350] rounded-lg px-4 py-3 focus:outline-none focus:border-[#7FB5E2] transition"
             />
           </section>
 
@@ -203,8 +203,8 @@ export default function EditProfilePage() {
                     className={`px-4 py-2 rounded-lg border text-sm cursor-pointer transition
                     ${
                       form.availability.includes(opt)
-                        ? "bg-blue-600 border-blue-600 text-white"
-                        : "border-[#1f2a37] text-gray-400 hover:border-blue-500"
+                        ? "bg-[#356EA6] border-[#356EA6] text-white"
+                        : "border-[#1a3350] text-white/40 hover:border-[#7FB5E2]"
                     }`}
                   >
                     {opt}
@@ -228,7 +228,7 @@ export default function EditProfilePage() {
               <select
                 value={level}
                 onChange={(e) => setLevel(e.target.value)}
-                className="bg-[#0f141c] border border-[#1f2a37] rounded-lg px-3 cursor-pointer focus:border-blue-500"
+                className="bg-[#0a1525] border border-[#1a3350] rounded-lg px-3 cursor-pointer focus:border-[#7FB5E2]"
               >
                 <option value="">Nivel</option>
                 <option>Básico</option>
@@ -240,13 +240,13 @@ export default function EditProfilePage() {
               <button
                 type="button"
                 onClick={addLanguage}
-                className="px-4 bg-blue-600 hover:bg-blue-700 transition rounded-lg cursor-pointer"
+                className="px-4 bg-[#356EA6] hover:bg-[#7FB5E2] transition rounded-lg cursor-pointer"
               >
                 Añadir
               </button>
             </div>
 
-            <div className="text-sm text-gray-400 space-y-1">
+            <div className="text-sm text-white/40 space-y-1">
               {form.languages.map((l, i) => (
                 <p key={i}>
                   {l.name} — {l.level}
@@ -267,22 +267,22 @@ export default function EditProfilePage() {
                 className="hidden"
               />
 
-              <div className="border-2 border-dashed border-[#2b3a4d] rounded-xl p-6 text-center transition group-hover:border-blue-500 group-hover:bg-[#0f1722]">
-                <p className="text-sm text-gray-400 group-hover:text-blue-400">
+              <div className="border-2 border-dashed border-[#1a3350] rounded-xl p-6 text-center transition group-hover:border-[#7FB5E2] group-hover:bg-[#0a1525]">
+                <p className="text-sm text-white/40 group-hover:text-[#7FB5E2]">
                   Click para subir tu CV (PDF)
                 </p>
               </div>
             </label>
 
             {form.cvFile && (
-              <p className="text-sm text-blue-400 font-medium">
+              <p className="text-sm text-[#7FB5E2] font-medium">
                 ✔ {form.cvFile}
               </p>
             )}
           </section>
 
           {/* BOTON FINAL */}
-          <button className="w-full py-4 bg-blue-600 hover:bg-blue-700 transition rounded-lg font-semibold text-lg tracking-wide shadow-lg cursor-pointer">
+          <button className="w-full py-4 bg-[#356EA6] hover:bg-[#7FB5E2] transition rounded-lg font-semibold text-lg tracking-wide shadow-lg cursor-pointer">
             Guardar Perfil
           </button>
         </form>
@@ -297,15 +297,15 @@ function Input(props: any) {
   return (
     <input
       {...props}
-      className="w-full bg-[#0f141c] border border-[#1f2a37] rounded-lg px-4 py-3
-      focus:outline-none focus:border-blue-500 transition text-gray-200"
+      className="w-full bg-[#0a1525] border border-[#1a3350] rounded-lg px-4 py-3
+      focus:outline-none focus:border-[#7FB5E2] transition text-white/80"
     />
   );
 }
 
 function Label({ children }: any) {
   return (
-    <p className="text-sm text-gray-400 uppercase tracking-wider mb-2">
+    <p className="text-sm text-white/40 uppercase tracking-wider mb-2">
       {children}
     </p>
   );

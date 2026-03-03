@@ -55,7 +55,7 @@ export default function ComenzarPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-950 text-neutral-100">
+    <div className="min-h-screen flex flex-col bg-[#040b15] text-neutral-100">
       {/* Header */}
       <header className="p-5 sm:p-7 border-b border-white/5">
         <Link href="/" className="inline-flex items-center gap-2 opacity-90 hover:opacity-100 transition cursor-pointer">
@@ -89,16 +89,16 @@ export default function ComenzarPage() {
               className={`w-full text-left p-6 rounded-xl border transition-all duration-200 cursor-pointer
               ${
                 selectedRole === "employer"
-                  ? "border-[#2F4E79] bg-[#1F2A44]/40 shadow-[0_0_0_1px_rgba(47,78,121,0.4)]"
+                  ? "border-[#356EA6] bg-[#12263a]/40 shadow-[0_0_0_1px_rgba(53,110,166,0.4)]"
                   : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.05] active:bg-white/[0.08]"
               }`}
             >
               <div className="flex items-start gap-4">
                 <div className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 transition-colors
                   ${selectedRole === "employer"
-                    ? "bg-[#2F4E79]"
+                    ? "bg-[#356EA6]"
                     : "bg-white/5"}`}>
-                  
+
                   {/* work_outline */}
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round"
@@ -114,7 +114,7 @@ export default function ComenzarPage() {
                 </div>
 
                 {selectedRole === "employer" && (
-                  <svg className="w-6 h-6 text-[#9BB8D3]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-[#7FB5E2]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 )}
@@ -127,14 +127,14 @@ export default function ComenzarPage() {
               className={`w-full text-left p-6 rounded-xl border transition-all duration-200 cursor-pointer
               ${
                 selectedRole === "freelancer"
-                  ? "border-[#2F4E79] bg-[#1F2A44]/40 shadow-[0_0_0_1px_rgba(47,78,121,0.4)]"
+                  ? "border-[#356EA6] bg-[#12263a]/40 shadow-[0_0_0_1px_rgba(53,110,166,0.4)]"
                   : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.05] active:bg-white/[0.08]"
               }`}
             >
               <div className="flex items-start gap-4">
                 <div className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 transition-colors
                   ${selectedRole === "freelancer"
-                    ? "bg-[#2F4E79]"
+                    ? "bg-[#356EA6]"
                     : "bg-white/5"}`}>
 
                   {/* person_outline */}
@@ -152,7 +152,7 @@ export default function ComenzarPage() {
                 </div>
 
                 {selectedRole === "freelancer" && (
-                  <svg className="w-6 h-6 text-[#9BB8D3]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-[#7FB5E2]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 )}
@@ -163,7 +163,7 @@ export default function ComenzarPage() {
           {/* Wallet status */}
           {isConnected && address && (
             <div className="flex items-center gap-2 justify-center mb-6 text-sm text-neutral-400">
-              <div className="w-2 h-2 rounded-full bg-[#5F88B3]" />
+              <div className="w-2 h-2 rounded-full bg-[#7FB5E2]" />
               Wallet conectada:
               <span className="font-mono text-neutral-200">
                 {address.slice(0, 6)}...{address.slice(-4)}
@@ -175,7 +175,7 @@ export default function ComenzarPage() {
           <button
             onClick={handleContinue}
             disabled={!selectedRole || isConnecting}
-            className="w-full py-3.5 rounded-xl font-semibold tracking-wide cursor-pointer bg-[#2F4E79] hover:bg-[#1F2A44] active:bg-[#0F1A34] transition disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full py-3.5 rounded-xl font-semibold tracking-wide cursor-pointer bg-[#356EA6] hover:bg-[#12263a] active:bg-[#0a1525] transition disabled:opacity-40 disabled:cursor-not-allowed"
             suppressHydrationWarning
           >
             {isConnecting
@@ -186,7 +186,7 @@ export default function ComenzarPage() {
           </button>
 
           {/* Hidden ConnectButton — owns the modal state; we click it programmatically */}
-          <div ref={hiddenConnectRef} style={{ position: "fixed", top: "-9999px", left: "-9999px", visibility: "hidden" }}>
+          <div ref={hiddenConnectRef} style={{ position: "fixed", top: "-9999px", left: "-9999px" }}>
             <ConnectButton />
           </div>
 

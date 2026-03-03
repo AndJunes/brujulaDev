@@ -57,7 +57,7 @@ export default function FreelancerHeader() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-sm border-b border-white/10">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#040b15] backdrop-blur-sm border-b border-[#1a3350]">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
 
@@ -96,35 +96,47 @@ export default function FreelancerHeader() {
                 {profile?.avatar ? (
                   <img
                     src={profile.avatar}
-                    className="w-9 h-9 rounded-full object-cover border border-white/10 group-hover:border-[#5F88B3] transition"
+                    className="w-9 h-9 rounded-full object-cover border border-[#1a3350] group-hover:border-[#7FB5E2] transition"
                   />
+                ) : profile?.name ? (
+                  <div className="w-9 h-9 rounded-full bg-[#7FB5E2]/10 flex items-center justify-center text-[#7FB5E2] font-semibold">
+                    {profile.name.charAt(0).toUpperCase()}
+                  </div>
                 ) : (
-                  <div className="w-9 h-9 rounded-full bg-[#5F88B3]/10 flex items-center justify-center text-[#5F88B3] font-semibold">
-                    {profile?.name?.charAt(0).toUpperCase()}
+                  <div className="w-9 h-9 rounded-full bg-[#7FB5E2]/10 flex items-center justify-center group-hover:border-[#7FB5E2] transition">
+                    <svg className="w-5 h-5 text-[#7FB5E2]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
                   </div>
                 )}
               </button>
 
               {/* DROPDOWN */}
               <div
-                className={`absolute right-0 mt-4 w-72 rounded-xl border border-white/10 bg-[#121821] shadow-xl transition-all duration-200 ${
+                className={`absolute right-0 mt-4 w-72 rounded-xl border border-[#1a3350] bg-[#12263a] shadow-xl transition-all duration-200 ${
                   open
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-2 pointer-events-none"
                 }`}
               >
-                {profile && (
+                {profile ? (
                   <>
-                    <div className="p-5 border-b border-white/5">
+                    <div className="p-5 border-b border-[#1a3350]">
                       <div className="flex items-center gap-3">
                         {profile.avatar ? (
                           <img
                             src={profile.avatar}
-                            className="w-12 h-12 rounded-full object-cover border border-white/10"
+                            className="w-12 h-12 rounded-full object-cover border border-[#1a3350]"
                           />
-                        ) : (
-                          <div className="w-12 h-12 rounded-full bg-[#5F88B3]/10 flex items-center justify-center text-[#5F88B3] font-semibold">
+                        ) : profile.name ? (
+                          <div className="w-12 h-12 rounded-full bg-[#7FB5E2]/10 flex items-center justify-center text-[#7FB5E2] font-semibold">
                             {profile.name.charAt(0).toUpperCase()}
+                          </div>
+                        ) : (
+                          <div className="w-12 h-12 rounded-full bg-[#7FB5E2]/10 flex items-center justify-center">
+                            <svg className="w-6 h-6 text-[#7FB5E2]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                            </svg>
                           </div>
                         )}
 
@@ -152,6 +164,42 @@ export default function FreelancerHeader() {
                         className="block px-5 py-2 text-white/70 hover:text-white hover:bg-white/5 transition"
                       >
                         Editar perfil
+                      </Link>
+
+                      <button
+                        onClick={logout}
+                        className="w-full text-left px-5 py-2 text-white/50 hover:text-white hover:bg-white/5 transition"
+                      >
+                        Cerrar sesión
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="p-5 border-b border-[#1a3350]">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-full bg-[#7FB5E2]/10 flex items-center justify-center">
+                          <svg className="w-6 h-6 text-[#7FB5E2]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-white text-sm font-medium">
+                            {wallet ? truncateAddress(wallet) : "Sin wallet"}
+                          </p>
+                          <p className="text-white/40 text-xs">
+                            Sin perfil
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="py-2 text-sm">
+                      <Link
+                        href="/dashboard/freelancer/profile/edit"
+                        className="block px-5 py-2 text-[#7FB5E2] hover:text-white hover:bg-white/5 transition"
+                      >
+                        Crear perfil
                       </Link>
 
                       <button

@@ -1,6 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius: var(--radius);
+}
+
 /* =========================
    HARVEY SPECTER THEME
    Elite • Corporate • Law Firm
@@ -42,6 +63,42 @@
 
   /* Radius más firme */
   --radius: 0.5rem;
+}
+
+/* =========================
+   DARK THEME (scoped)
+   Used on freelancer dashboard
+========================= */
+
+[data-theme="dark"] {
+  --background: #040b15;
+  --foreground: #e2e8f0;
+
+  --card: #12263a;
+  --card-foreground: #e2e8f0;
+
+  --primary: #356EA6;
+  --primary-foreground: #ffffff;
+
+  --secondary: #7FB5E2;
+  --secondary-foreground: #040b15;
+
+  --muted: #1A3A66;
+  --muted-foreground: #7FB5E2;
+
+  --accent: #7FB5E2;
+  --accent-foreground: #040b15;
+
+  --destructive: hsl(0, 70%, 45%);
+  --destructive-foreground: #e2e8f0;
+
+  --border: #1a3350;
+  --input: #1a3350;
+  --ring: #356EA6;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #1a3350;
 }
 
 /* =========================

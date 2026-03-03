@@ -23,7 +23,7 @@ export default function HowItWorks() {
   return (
     <section
       id="como-funciona"
-      className="relative py-36 bg-black text-white overflow-hidden"
+      className="relative py-36 bg-[#040b15] text-white overflow-hidden"
     >
       {/* iluminación sutil */}
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05),transparent_65%)]" />
